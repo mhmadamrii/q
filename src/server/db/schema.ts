@@ -55,10 +55,6 @@ export const users = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
-}));
-
 export const accounts = createTable(
   "account",
   {
@@ -88,10 +84,6 @@ export const accounts = createTable(
   }),
 );
 
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] }),
-}));
-
 export const sessions = createTable(
   "session",
   {
@@ -111,10 +103,6 @@ export const sessions = createTable(
   }),
 );
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] }),
-}));
-
 export const verificationTokens = createTable(
   "verification_token",
   {
@@ -129,3 +117,38 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
+
+export const questions = createTable("questions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  content: varchar("content", { length: 255 }).notNull(),
+  authorId: varchar("author_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
+// relations
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, { fields: [accounts.userId], references: [users.id] }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] }),
+}));
+
+export const usersRelations = relations(users, ({ one, many }) => ({
+  accounts: many(accounts),
+  questions: many(questions),
+}));
+
+export const questionsRelations = relations(questions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [questions.authorId],
+    references: [users.id],
+  }),
+}));
