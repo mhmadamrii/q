@@ -27,6 +27,11 @@ const NAV_LINKS = [
     icon: AnswerIcon,
   },
   {
+    href: "/spaces",
+    label: "Spaces",
+    icon: SpaceIcon,
+  },
+  {
     href: "/notifications",
     label: "Notifications",
     icon: NotificatinIcon,

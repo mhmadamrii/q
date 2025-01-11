@@ -132,6 +132,69 @@ export const questions = createTable("questions", {
   ),
 });
 
+export const answers = createTable("answer", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  content: varchar("content", { length: 255 }).notNull(),
+  questionId: integer("question_id")
+    .notNull()
+    .references(() => questions.id),
+  authorId: varchar("author_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
+export const spaces = createTable("space", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name", { length: 255 }),
+  imageUrl: varchar("image_url", { length: 255 }),
+  description: varchar("description", { length: 255 }),
+  createdById: varchar("created_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
+export const followers = createTable("follower", {
+  followerId: varchar("follower_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  followedId: varchar("followed_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
+export const followings = createTable("following", {
+  followerId: varchar("follower_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  followedId: varchar("followed_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
 // relations
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
@@ -149,6 +212,47 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 export const questionsRelations = relations(questions, ({ one, many }) => ({
   user: one(users, {
     fields: [questions.authorId],
+    references: [users.id],
+  }),
+  answers: many(answers),
+}));
+
+export const answersRelations = relations(answers, ({ one, many }) => ({
+  author: one(users, {
+    fields: [answers.authorId],
+    references: [users.id],
+  }),
+  question: one(questions, {
+    fields: [answers.questionId],
+    references: [questions.id],
+  }),
+}));
+
+export const spacesRelations = relations(spaces, ({ one, many }) => ({
+  user: one(users, {
+    fields: [spaces.createdById],
+    references: [users.id],
+  }),
+}));
+
+export const followersRelations = relations(followers, ({ one, many }) => ({
+  follower: one(users, {
+    fields: [followers.followerId],
+    references: [users.id],
+  }),
+  followed: one(users, {
+    fields: [followers.followedId],
+    references: [users.id],
+  }),
+}));
+
+export const followingsRelations = relations(followings, ({ one, many }) => ({
+  follower: one(users, {
+    fields: [followings.followerId],
+    references: [users.id],
+  }),
+  followed: one(users, {
+    fields: [followings.followedId],
     references: [users.id],
   }),
 }));

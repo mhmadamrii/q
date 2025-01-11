@@ -1,4 +1,5 @@
 import "~/styles/globals.css";
+import "react-quill-new/dist/quill.snow.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
