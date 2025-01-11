@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
+import { CreateQuestion } from "./_components/CreateQuestion";
 
 export default function Page() {
   const [question, setQuestion] = useState("");
@@ -14,17 +15,8 @@ export default function Page() {
   });
 
   return (
-    <div className="mt-[200px]">
-      <Input onChange={(e) => setQuestion(e.target.value)} />
-      <Button
-        onClick={() => {
-          mutate({
-            content: question,
-          });
-        }}
-      >
-        {isPending ? "loadingl" : "Create"}
-      </Button>
+    <div className="">
+      <CreateQuestion />
     </div>
   );
 }
