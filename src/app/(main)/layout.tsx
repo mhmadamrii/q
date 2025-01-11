@@ -16,7 +16,7 @@ export default async function MainLayout({
         <h1>Some Spaces</h1>
       </section>
       <section className="flex-1 border">{children}</section>
-      <section className="w-[35%] border">
+      <section className="hidden w-[35%] border sm:block">
         <h1>Some Advertisement</h1>
       </section>
     </section>

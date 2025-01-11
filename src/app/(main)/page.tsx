@@ -1,22 +1,22 @@
-"use client";
-
-import { useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { api } from "~/trpc/react";
 import { CreateQuestion } from "./_components/CreateQuestion";
+import { api } from "~/trpc/server";
+import { Suspense } from "react";
 
-export default function Page() {
-  const [question, setQuestion] = useState("");
-  const { data, refetch } = api.question.getAllQuestions.useQuery();
+async function HomeWithServerData() {
+  const questions = await api.question.getAllQuestions();
+  console.log(questions);
+  return questions.map((question) => (
+    <div key={question.id}>{question.content}</div>
+  ));
+}
 
-  const { mutate, isPending } = api.question.createQuestions.useMutation({
-    onSuccess: (res) => refetch(),
-  });
-
+export default function Home() {
   return (
     <div className="">
       <CreateQuestion />
+      <Suspense fallback={<div>Loading...</div>}>
+        <HomeWithServerData />
+      </Suspense>
     </div>
   );
 }

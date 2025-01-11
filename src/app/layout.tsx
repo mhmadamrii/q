@@ -3,7 +3,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-
+import { Toaster } from "sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
 
@@ -30,6 +30,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster richColors />
             <NuqsAdapter>{children}</NuqsAdapter>
           </ThemeProvider>
         </TRPCReactProvider>
