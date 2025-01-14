@@ -1,12 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import ReactQuill from "react-quill-new";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { Input } from "~/components/ui/input";
-import { useQueryState } from "nuqs";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -18,19 +18,31 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 
-export function DialogAnswer() {
+export function DialogAnswer({
+  question,
+  questionId,
+}: {
+  question: string;
+  questionId: number;
+}) {
+  const router = useRouter();
   const [value, setValue] = useState("");
   const [isOpenDialog, setIsOpenDialog] = useState(false);
-  const [qInput, setQInput] = useQueryState("q", { defaultValue: "" });
 
-  const { mutate, isPending } = api.question.createQuestions.useMutation({
+  const { mutate, isPending } = api.answer.createAnswer.useMutation({
     onSuccess: () => {
       setIsOpenDialog(false);
+      toast.success("Answer created successfully");
+      router.refresh();
     },
   });
 
-  console.log("document", document);
-  const handleCreatePost = () => {};
+  const handleCreatePost = () => {
+    mutate({
+      content: value,
+      questionId,
+    });
+  };
   return (
     <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger className="w-full">
@@ -43,7 +55,7 @@ export function DialogAnswer() {
       </DialogTrigger>
       <DialogContent className="flex h-[50%] w-full flex-col justify-between border sm:min-h-[400px] sm:min-w-[700px]">
         <DialogHeader>
-          <DialogTitle></DialogTitle>
+          <DialogTitle>{question}</DialogTitle>
 
           <DialogDescription></DialogDescription>
           <ReactQuill theme="snow" value={value} onChange={setValue} />
@@ -53,7 +65,7 @@ export function DialogAnswer() {
             Cancel
           </Button>
           <Button
-            disabled={qInput.length < 1 || isPending}
+            disabled={value.length < 1 || isPending}
             variant="default"
             className="rounded-3xl bg-blue-500 text-white hover:bg-blue-600"
             onClick={handleCreatePost}

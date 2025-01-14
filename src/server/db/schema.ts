@@ -121,6 +121,8 @@ export const verificationTokens = createTable(
 export const questions = createTable("questions", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   content: varchar("content", { length: 255 }).notNull(),
+  upVote: integer("upvote").default(0),
+  downVote: integer("downvote").default(0),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
     .references(() => users.id),
@@ -134,7 +136,9 @@ export const questions = createTable("questions", {
 
 export const answers = createTable("answer", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  content: varchar("content", { length: 255 }).notNull(),
+  content: varchar("content", { length: 3000 }).notNull(),
+  upVote: integer("upvote").default(0),
+  downVote: integer("downvote").default(0),
   questionId: integer("question_id")
     .notNull()
     .references(() => questions.id),

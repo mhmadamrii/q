@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { questions } from "~/server/db/schema";
+import { answers, questions } from "~/server/db/schema";
 
 import {
   createTRPCRouter,
@@ -17,11 +17,12 @@ export const answerRouter = createTRPCRouter({
   }),
 
   createAnswer: protectedProcedure
-    .input(z.object({ content: z.string().min(1) }))
+    .input(z.object({ content: z.string().min(1), questionId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(questions).values({
+      await ctx.db.insert(answers).values({
         content: input.content,
         authorId: ctx.session.user.id,
+        questionId: input.questionId,
       });
     }),
 });

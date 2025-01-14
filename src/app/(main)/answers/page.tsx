@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { api } from "~/trpc/server";
 import { DialogAnswer } from "./_components/DialogAnswer";
+import { Separator } from "~/components/ui/separator";
 
 async function AnswersWithServerData() {
   const questions = await api.question.getAllQuestions();
@@ -9,7 +10,9 @@ async function AnswersWithServerData() {
       {questions.map((question) => (
         <div key={question.id}>
           <h1>{question.content}</h1>
-          <DialogAnswer />
+          <Separator />
+          <p>{question.answers.length}</p>
+          <DialogAnswer question={question.content} questionId={question.id} />
         </div>
       ))}
     </div>

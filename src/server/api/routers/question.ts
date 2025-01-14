@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { questions } from "~/server/db/schema";
+import { answers, questions, questionsRelations } from "~/server/db/schema";
+import { count, eq, gt, isNotNull, ne, sql } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -12,9 +13,47 @@ export const questionRouter = createTRPCRouter({
     return await ctx.db.query.questions.findMany({
       with: {
         user: true,
+        answers: true,
       },
     });
   }),
+
+  getAllAnsweredQuestions: publicProcedure.query(async ({ ctx }) => {
+    const answeredQuestions = await ctx.db.query.questions.findMany({
+      with: {
+        answers: true,
+        user: true,
+      },
+    });
+
+    const filteredAnsweredQuestions = answeredQuestions.filter(
+      (question) => question.answers.length >= 1,
+    );
+
+    return filteredAnsweredQuestions;
+  }),
+
+  upVote: protectedProcedure
+    .input(z.object({ questionId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db
+        .update(questions)
+        .set({
+          upVote: sql`${questions.upVote} + 1`,
+        })
+        .where(eq(questions.id, input.questionId));
+    }),
+
+  downVote: protectedProcedure
+    .input(z.object({ questionId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db
+        .update(questions)
+        .set({
+          upVote: sql`${questions.upVote} - 1`,
+        })
+        .where(eq(questions.id, input.questionId));
+    }),
 
   createQuestions: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))

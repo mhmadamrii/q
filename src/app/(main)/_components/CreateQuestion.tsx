@@ -160,7 +160,7 @@ function DialogCreateQuestion({
 export function CreateQuestion() {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   return (
-    <section className="flex flex-col gap-2 border">
+    <section className="flex flex-col gap-2">
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />

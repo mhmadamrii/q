@@ -10,12 +10,12 @@ export default async function MainLayout({
     redirect("/auth");
   }
   return (
-    <section className="mx-auto flex min-h-screen max-w-6xl border pt-16">
+    <section className="mx-auto flex min-h-screen max-w-6xl pt-16">
       <Navbar />
-      <section className="w-[20%] border">
+      <section className="w-[20%]">
         <h1>Some Spaces</h1>
       </section>
-      <section className="flex-1 border">{children}</section>
+      <section className="flex-1">{children}</section>
       <section className="hidden w-[35%] border sm:block">
         <h1>Some Advertisement</h1>
       </section>
