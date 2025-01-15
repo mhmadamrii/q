@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { AnswerIcon } from "~/components/icons/NavIcons";
 
 export function DialogAnswer({
   question,
@@ -46,12 +47,13 @@ export function DialogAnswer({
   return (
     <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger className="w-full">
-        <Input
-          readOnly
-          className="w-full cursor-pointer rounded-3xl"
-          placeholder="What do you want to ask or share?"
+        <div
           onClick={() => setIsOpenDialog(true)}
-        />
+          className="relative flex w-[100px] gap-2 rounded-3xl border px-2 py-1 hover:bg-[#181818]"
+        >
+          <AnswerIcon />
+          <h1>Answer</h1>
+        </div>
       </DialogTrigger>
       <DialogContent className="flex h-[50%] w-full flex-col justify-between border sm:min-h-[400px] sm:min-w-[700px]">
         <DialogHeader>
