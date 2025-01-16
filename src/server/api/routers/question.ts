@@ -34,17 +34,19 @@ export const questionRouter = createTRPCRouter({
   }),
 
   getInfiniteAnsweredQuestions: publicProcedure
-    .input(z.object({ limit: z.number(), cursor: z.number().optional() }))
+    .input(z.object({ limit: z.number(), offset: z.number() }))
     .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
-      return await ctx.db.query.questions.findMany({
-        with: {
-          answers: true,
-          user: true,
-        },
-        limit,
-        offset: 1,
-      });
+      const { limit, offset } = input;
+      const items = await ctx.db
+        .select()
+        .from(questions)
+        .limit(limit)
+        .offset(offset);
+
+      return {
+        q: items,
+        isHasMore: items.length > 0,
+      };
     }),
 
   upVote: protectedProcedure

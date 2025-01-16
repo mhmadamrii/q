@@ -141,7 +141,7 @@ export const answers = createTable("answer", {
   downVote: integer("downvote").default(0),
   questionId: integer("question_id")
     .notNull()
-    .references(() => questions.id),
+    .references(() => questions.id, { onDelete: "cascade" }),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
     .references(() => users.id),
