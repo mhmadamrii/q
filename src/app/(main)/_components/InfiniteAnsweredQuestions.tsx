@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "~/trpc/react";
 
-export function InfiniteAnsweredQuestions() {
+export const InfiniteAnsweredQuestions = memo(() => {
   const { ref, inView } = useInView();
   const [limit] = useState(3);
   const [offset, setOffset] = useState(0);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<any>([]);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
 
   const { data, refetch } = api.question.getInfiniteAnsweredQuestions.useQuery({
@@ -16,13 +16,16 @@ export function InfiniteAnsweredQuestions() {
     offset,
   });
 
-  const handleLoadMore = () => {
+  const handleLoadMore = async () => {
+    setIsFetchingNextPage(true);
     setOffset((p) => p + 1);
-    refetch().then((r) => {});
+    await new Promise((res) => setTimeout(res, 3000));
+    await refetch();
+    setIsFetchingNextPage(false);
   };
 
   useEffect(() => {
-    if (inView) {
+    if (inView && questions.length < data?.qLen?.count!) {
       handleLoadMore();
     }
   }, [inView]);
@@ -37,39 +40,16 @@ export function InfiniteAnsweredQuestions() {
     }
   }, [data]);
 
-  console.log("question", questions);
-
-  const arr = [
-    {
-      id: 1,
-      content: "hello",
-      authorId: 1,
-      upVote: 1,
-      downVote: 0,
-    },
-    {
-      id: 2,
-      content: "hello",
-      authorId: 1,
-      upVote: 1,
-      downVote: 0,
-    },
-    {
-      id: 1,
-      content: "hello",
-      authorId: 1,
-      upVote: 1,
-      downVote: 0,
-    },
-  ];
+  console.log("offset", offset);
 
   return (
     <div>
       <section className="mx-auto max-w-3xl border">
-        {questions?.map((c, idx) => (
+        {questions?.map((c: any, idx: number) => (
           <div key={idx} className="h-[500px] border p-4">
             <h1>{c.content}</h1>
             <h1>{c.content}</h1>
+            <h1>{idx + 1}</h1>
           </div>
         ))}
         <button
@@ -85,4 +65,4 @@ export function InfiniteAnsweredQuestions() {
       </section>
     </div>
   );
-}
+});

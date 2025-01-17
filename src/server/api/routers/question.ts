@@ -37,6 +37,10 @@ export const questionRouter = createTRPCRouter({
     .input(z.object({ limit: z.number(), offset: z.number() }))
     .query(async ({ ctx, input }) => {
       const { limit, offset } = input;
+      // count all questions
+      const l = await ctx.db
+        .select({ count: count(questions.id) })
+        .from(questions);
       const items = await ctx.db
         .select()
         .from(questions)
@@ -45,7 +49,7 @@ export const questionRouter = createTRPCRouter({
 
       return {
         q: items,
-        isHasMore: items.length > 0,
+        qLen: l[0],
       };
     }),
 
