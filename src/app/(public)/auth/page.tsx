@@ -1,7 +1,5 @@
-import Link from "next/link";
-
-import { Button } from "~/components/ui/button";
-import { auth, signIn } from "~/server/auth";
+import { ButtonLogin } from "../_components/ButtonLogin";
+import { auth } from "~/server/auth";
 import {
   Card,
   CardContent,
@@ -13,7 +11,7 @@ import {
 
 export default async function Auth() {
   const session = await auth();
-
+  console.log("session", session);
   return (
     <div className="flex h-screen items-center justify-center bg-[url('/download.png')] bg-cover bg-center bg-no-repeat">
       <Card className="h-[90%] w-[90%] border-[#3c3c3c] bg-[#3c3c3c] sm:h-[60%] sm:w-[60%]">
@@ -38,12 +36,7 @@ export default async function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center">
-          <Link
-            href={session ? "/api/auth/signout" : "/api/auth/signin"}
-            className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-          >
-            {session ? "Sign out" : "Sign in"}
-          </Link>
+          <ButtonLogin />
         </CardContent>
         <CardFooter></CardFooter>
       </Card>

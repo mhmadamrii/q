@@ -1,68 +1,130 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? // @db.Text
+  access_token             String? // @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? // @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token_expires_in Int?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    password      String?
-    username      String?   @unique
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    bio           String?
-    isVerified    Boolean   @default(false)
-    accounts      Account[]
-    sessions      Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  password      String?
+  username      String?   @unique
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  bio           String?
+  isVerified    Boolean   @default(false)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  followers Follow[]
+  accounts  Account[]
+  answers   Answer[]
+  posts     Post[]
+  questions Question[]
+  sessions  Session[]
+  spaces    Space[]
+}
+
+model Answer {
+  id          Int       @id @default(autoincrement())
+  content     String    @db.VarChar(3000)
+  question_id Int
+  author_id   String    @db.VarChar(255)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  upvote      Int?      @default(0)
+  downvote    Int?      @default(0)
+  User        User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  questions   Question  @relation(fields: [question_id], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id           Int       @id @default(autoincrement())
+  follower_id  String
+  following_id String
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @db.Timestamptz(6)
+  User         User?     @relation(fields: [userId], references: [id])
+  userId       String?   @db.VarChar(255)
+}
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(256)
+  created_by String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  image_url  String?   @db.VarChar(256)
+  User       User      @relation(fields: [created_by], references: [id], onDelete: Cascade)
+  coments    Comment[]
+
+  @@index([created_by], map: "created_by_idx")
+  @@index([name], map: "name_idx")
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+  Post    Post?  @relation(fields: [postId], references: [id])
+  postId  Int?
+}
+
+model Question {
+  id         Int       @id @default(autoincrement())
+  content    String    @db.VarChar(255)
+  author_id  String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  upvote     Int?      @default(0)
+  downvote   Int?      @default(0)
+  answers    Answer[]
+  user       User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+}
+
+model Space {
+  id          Int       @id @default(autoincrement())
+  name        String?   @db.VarChar(255)
+  image_url   String?   @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  created_by  String    @db.VarChar(255)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  User        User      @relation(fields: [created_by], references: [id], onDelete: Cascade)
 }
