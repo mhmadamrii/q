@@ -3,6 +3,7 @@
 import { useEffect, useState, memo } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "~/trpc/react";
+import { QuestionCard } from "./QuestionCard";
 
 export const InfiniteAnsweredQuestions = memo(() => {
   const { ref, inView } = useInView();
@@ -25,7 +26,7 @@ export const InfiniteAnsweredQuestions = memo(() => {
   };
 
   useEffect(() => {
-    if (inView && questions.length < data?.qLen?.count!) {
+    if (inView && questions.length < data?.qLen?.count) {
       handleLoadMore();
     }
   }, [inView]);
@@ -39,18 +40,13 @@ export const InfiniteAnsweredQuestions = memo(() => {
       setQuestions(b);
     }
   }, [data]);
-
-  console.log("offset", offset);
+  console.log(data);
 
   return (
     <div>
       <section className="mx-auto max-w-3xl border">
         {questions?.map((c: any, idx: number) => (
-          <div key={idx} className="h-[500px] border p-4">
-            <h1>{c.content}</h1>
-            <h1>{c.content}</h1>
-            <h1>{idx + 1}</h1>
-          </div>
+          <QuestionCard key={c.id} question={c} />
         ))}
         <button
           onClick={() => handleLoadMore()}

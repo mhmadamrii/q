@@ -37,19 +37,36 @@ export const questionRouter = createTRPCRouter({
     .input(z.object({ limit: z.number(), offset: z.number() }))
     .query(async ({ ctx, input }) => {
       const { limit, offset } = input;
-      // count all questions
-      const l = await ctx.db
-        .select({ count: count(questions.id) })
-        .from(questions);
-      const items = await ctx.db
-        .select()
-        .from(questions)
-        .limit(limit)
-        .offset(offset);
+
+      const answeredQuestions = await ctx.db.query.questions.findMany({
+        with: {
+          answers: true,
+          user: true,
+        },
+        limit,
+        offset,
+      });
+
+      console.dir(
+        await ctx.db.query.questions.findMany({
+          with: {
+            answers: true,
+            user: true,
+          },
+          // offset,
+        }),
+        { depth: null },
+      );
+
+      const filteredAnsweredQuestions = answeredQuestions.filter(
+        (question) => question.answers.length >= 1,
+      );
+
+      // console.log("filteredAnsweredQuestions", answeredQuestions);
 
       return {
-        q: items,
-        qLen: l[0],
+        q: filteredAnsweredQuestions,
+        qLen: filteredAnsweredQuestions.length,
       };
     }),
 

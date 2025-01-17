@@ -2,6 +2,7 @@ import { CreateQuestion } from "./_components/CreateQuestion";
 import { api } from "~/trpc/server";
 import { Suspense } from "react";
 import { QuestionCard } from "./_components/QuestionCard";
+import { InfiniteAnsweredQuestions } from "./_components/InfiniteAnsweredQuestions";
 
 async function HomeWithServerData() {
   const answeredQuestion = await api.question.getAllAnsweredQuestions();
@@ -14,9 +15,10 @@ export default function Home() {
   return (
     <div className="">
       <CreateQuestion />
-      <Suspense fallback={<div>Loading...</div>}>
+      <InfiniteAnsweredQuestions />
+      {/* <Suspense fallback={<div>Loading...</div>}>
         <HomeWithServerData />
-      </Suspense>
+      </Suspense> */}
     </div>
   );
 }

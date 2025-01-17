@@ -40,7 +40,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   return (
-    <div className="absolute left-0 right-0 top-0 z-10 flex min-h-[50px] w-full flex-1 justify-center bg-[#181818]">
+    <div className="fixed left-0 right-0 top-0 z-10 flex min-h-[50px] w-full flex-1 justify-center bg-[#181818]">
       <div className="mx-auto flex w-full max-w-6xl gap-4">
         <Link href="/">
           <svg width="80" height="50" viewBox="0 0 202 115">
