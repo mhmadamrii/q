@@ -1,7 +1,8 @@
-import Link from "next/link";
+"use client";
 
-import { Button } from "./ui/button";
-import { FormCreateSpace } from "./FormCreateSpace";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import {
   AnswerIcon,
   FollowingIcon,
@@ -9,6 +10,7 @@ import {
   NotificatinIcon,
   SpaceIcon,
 } from "./icons/NavIcons";
+import { cn } from "~/lib/utils";
 
 const NAV_LINKS = [
   {
@@ -39,9 +41,12 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+  console.log("pathname", pathname);
+
   return (
     <div className="fixed left-0 right-0 top-0 z-10 flex min-h-[50px] w-full flex-1 justify-center bg-[#181818]">
-      <div className="mx-auto flex w-full max-w-6xl gap-4">
+      <div className="mx-auto flex w-full max-w-5xl gap-4">
         <Link href="/">
           <svg width="80" height="50" viewBox="0 0 202 115">
             <path
@@ -52,10 +57,15 @@ export function Navbar() {
             ></path>
           </svg>
         </Link>
-        <ul className="flex items-center gap-4">
+        <ul className="flex items-center gap-[30px]">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => (
             <li key={label}>
-              <Link href={href}>
+              <Link
+                className={cn("", {
+                  "border border-red-500": pathname === href,
+                })}
+                href={href}
+              >
                 <Icon />
               </Link>
             </li>

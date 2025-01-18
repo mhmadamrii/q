@@ -2,12 +2,13 @@
 
 import ReactQuill from "react-quill-new";
 
+import { AnswerIcon } from "~/components/icons/NavIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { AnswerIcon } from "~/components/icons/NavIcons";
 
 export function DialogAnswer({
   question,

@@ -7,6 +7,14 @@ import {
 } from "~/server/api/trpc";
 
 export const questionRouter = createTRPCRouter({
+  getAllQuestions: protectedProcedure.query(async ({ ctx }) => {
+    const questions = await ctx.db.question.findMany({
+      include: {
+        answers: true,
+      },
+    });
+    return questions;
+  }),
   getAllAnsweredQuestions: publicProcedure.query(async ({ ctx }) => {
     const answeredQuestions = await ctx.db.question.findMany({
       include: {
@@ -34,6 +42,7 @@ export const questionRouter = createTRPCRouter({
         orderBy: { id: "asc" },
         include: {
           answers: true,
+          user: true,
         },
       });
 
@@ -82,3 +91,5 @@ export const questionRouter = createTRPCRouter({
       });
     }),
 });
+
+export type QuestionRouterType = typeof questionRouter;

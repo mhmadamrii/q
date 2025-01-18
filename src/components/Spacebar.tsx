@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export function Spacebar() {
   return (
-    <section className="sticky top-16 h-[20vh] w-[20%]">
+    <section className="sticky top-16 h-[20vh] w-[15%]">
       <Button className="flex w-full gap-2" variant="outline">
         <Plus />
         Create Space

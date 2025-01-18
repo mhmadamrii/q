@@ -1,23 +1,23 @@
 "use client";
 
-import { SelectQuestionAndAnswers } from "~/server/db/types";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { ArrowBigUp } from "lucide-react";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { GetAnsweredQuestion } from "~/server/types";
 
 export function QuestionCard({
   question,
 }: {
-  question: SelectQuestionAndAnswers;
+  question: GetAnsweredQuestion[0];
 }) {
   const router = useRouter();
   const highestAnswer = question.answers.reduce(
     (highest, current) =>
-      current?.upVote! > highest?.upVote! ? current : highest,
+      current?.upvote! > highest?.upvote! ? current : highest,
     question.answers[0],
-  ) as unknown as SelectQuestionAndAnswers;
+  );
 
   const { mutate } = api.question.upVote.useMutation({
     onSuccess: () => {
@@ -56,7 +56,7 @@ export function QuestionCard({
           >
             <ArrowBigUp />
             <h1>Upvote</h1>
-            <h1>{question.upVote}</h1>
+            <h1>{question.upvote}</h1>
           </div>
         </div>
       </div>
