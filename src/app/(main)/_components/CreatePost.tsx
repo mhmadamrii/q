@@ -12,14 +12,6 @@ import { User, ChevronRight, Users } from "lucide-react";
 import { useQueryState } from "nuqs";
 
 import {
-  IKImage,
-  IKVideo,
-  ImageKitProvider,
-  IKUpload,
-  ImageKitContext,
-} from "imagekitio-next";
-
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -34,9 +26,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { ImageKitUploader } from "~/components/ImagekitUploader";
 
-function DialogCreateQuestion({
+function DialogCreatePost({
   isOpenDialog,
   setIsOpenDialog,
 }: {
@@ -74,7 +65,7 @@ function DialogCreateQuestion({
           onClick={() => setIsOpenDialog(true)}
         />
       </DialogTrigger>
-      <DialogContent className="flex min-h-[50%] w-full flex-col justify-between border sm:min-h-[400px] sm:min-w-[700px]">
+      <DialogContent className="flex h-[50%] w-full flex-col justify-between border sm:min-h-[400px] sm:min-w-[700px]">
         <DialogHeader>
           <DialogTitle></DialogTitle>
 
@@ -145,7 +136,6 @@ function DialogCreateQuestion({
             </TabsContent>
             <TabsContent value="password">
               Change your password here.
-              <ImageKitUploader />
             </TabsContent>
           </Tabs>
         </DialogHeader>
@@ -167,7 +157,7 @@ function DialogCreateQuestion({
   );
 }
 
-export function CreateQuestion() {
+export function CreatePost() {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   return (
     <section className="flex flex-col gap-2">
@@ -176,7 +166,7 @@ export function CreateQuestion() {
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <DialogCreateQuestion
+        <DialogCreatePost
           isOpenDialog={isOpenDialog}
           setIsOpenDialog={setIsOpenDialog}
         />

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+
 import { usePathname } from "next/navigation";
+import { cn } from "~/lib/utils";
 
 import {
   AnswerIcon,
@@ -10,7 +12,6 @@ import {
   NotificatinIcon,
   SpaceIcon,
 } from "./icons/NavIcons";
-import { cn } from "~/lib/utils";
 
 const NAV_LINKS = [
   {
@@ -42,7 +43,6 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const pathname = usePathname();
-  console.log("pathname", pathname);
 
   return (
     <div className="fixed left-0 right-0 top-0 z-10 flex min-h-[50px] w-full flex-1 justify-center bg-[#181818]">
@@ -59,14 +59,14 @@ export function Navbar() {
         </Link>
         <ul className="flex items-center gap-[30px]">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => (
-            <li key={label}>
-              <Link
-                className={cn("", {
-                  "border border-red-500": pathname === href,
-                })}
-                href={href}
-              >
-                <Icon />
+            <li
+              className={cn(
+                "flex h-full items-center rounded-md hover:bg-[#18181883]",
+              )}
+              key={label}
+            >
+              <Link href={href}>
+                <Icon isActive={pathname === href} />
               </Link>
             </li>
           ))}

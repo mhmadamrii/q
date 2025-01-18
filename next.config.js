@@ -12,6 +12,15 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+        port: "",
+      },
+    ],
+  },
 };
 
 export default config;

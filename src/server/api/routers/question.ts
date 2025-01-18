@@ -45,12 +45,15 @@ export const questionRouter = createTRPCRouter({
           user: true,
         },
       });
+      console.dir(questions, { depth: null });
 
       const nextCursor = questions.length > limit ? questions.pop()!.id : null; // Get next cursor if more pages exist
 
       const filteredAnsweredQuestions = questions.filter(
         (question) => question.answers.length >= 1,
       );
+
+      console.log("filteredAnsweredQuestions", filteredAnsweredQuestions);
 
       return {
         questions: filteredAnsweredQuestions,

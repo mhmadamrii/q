@@ -27,7 +27,7 @@ export function QuestionCard({
   });
 
   return (
-    <div className="my-2 rounded-lg bg-[#181818] p-3">
+    <div className="rounded-lg border bg-[#181818] p-3">
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage src={question?.user?.image ?? ""} />

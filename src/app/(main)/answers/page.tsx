@@ -5,10 +5,11 @@ import { Separator } from "~/components/ui/separator";
 
 async function AnswersWithServerData() {
   const questions = await api.question.getAllQuestions();
+  console.log("questions", questions);
   return (
     <div>
       {questions.map((question) => (
-        <div key={question.id}>
+        <div className="border border-blue-500" key={question.id}>
           <h1>{question.content}</h1>
           <Separator />
           <p>{question.answers.length}</p>

@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "~/trpc/react";
 import { QuestionCard } from "./QuestionCard";
+import { Button } from "~/components/ui/button";
+import { ReachedBottom } from "./ReachedBottom";
 
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
@@ -11,7 +13,7 @@ export function InfiniteAnsweredQuestions() {
   const { data, isFetchingNextPage, fetchNextPage, isLoading, hasNextPage } =
     api.question.getInfiniteAnsweredQuestions.useInfiniteQuery(
       {
-        limit: 3,
+        limit: 5,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
@@ -19,20 +21,21 @@ export function InfiniteAnsweredQuestions() {
     );
 
   useEffect(() => {
-    if (inView) {
+    if (inView && !isLoading && hasNextPage) {
       fetchNextPage();
     }
   }, [inView]);
 
   return (
-    <section className="mx-auto max-w-3xl border">
+    <section className="mx-auto flex max-w-3xl flex-col gap-2 border">
       {data?.pages.map((page, idx) => (
-        <div key={idx} className="flex flex-col gap-5">
+        <div key={idx} className="flex flex-col gap-2">
           {page.questions?.map((u) => <QuestionCard key={u.id} question={u} />)}
         </div>
       ))}
-      <div className="h-[200px] border border-red-500" ref={ref}>
+      <div className="min-h-[100px] border" ref={ref}>
         {isFetchingNextPage && "Loading..."}
+        {!hasNextPage && <ReachedBottom />}
       </div>
     </section>
   );
