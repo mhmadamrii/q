@@ -33,7 +33,6 @@ export function ImageKitUploader() {
   console.log("image current", image);
   return (
     <div>
-      <h1>ImageKit Next.js quick start</h1>
       <ImageKitProvider
         publicKey={publicKey}
         urlEndpoint={urlEndpoint}

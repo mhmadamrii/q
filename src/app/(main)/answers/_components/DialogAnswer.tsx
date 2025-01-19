@@ -51,7 +51,7 @@ export function DialogAnswer({
           onClick={() => setIsOpenDialog(true)}
           className="relative flex w-[100px] gap-2 rounded-3xl border px-2 py-1 hover:bg-[#181818]"
         >
-          <AnswerIcon />
+          <AnswerIcon isActive={false} />
           <h1>Answer</h1>
         </div>
       </DialogTrigger>
