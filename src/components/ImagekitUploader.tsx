@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ImageKitProvider, IKImage, IKUpload } from "imagekitio-next";
+import { UploadImageIcon } from "./icons/UploadImageIcon";
 
 const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
@@ -30,7 +31,6 @@ const onError = (err: any) => {
 
 export function ImageKitUploader() {
   const [image, setImage] = React.useState("");
-  console.log("image current", image);
   return (
     <div>
       <ImageKitProvider
@@ -39,7 +39,7 @@ export function ImageKitUploader() {
         authenticator={authenticator}
       >
         <div>
-          <h2>File upload</h2>
+          <UploadImageIcon />
           <IKUpload
             fileName="test-upload.png"
             onError={onError}
