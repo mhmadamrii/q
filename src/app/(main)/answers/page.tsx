@@ -5,7 +5,6 @@ import { Separator } from "~/components/ui/separator";
 
 async function AnswersWithServerData() {
   const questions = await api.question.getAllQuestions();
-  console.log("questions", questions);
   return (
     <div>
       {questions.map((question) => (

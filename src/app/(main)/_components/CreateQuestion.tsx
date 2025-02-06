@@ -3,6 +3,7 @@
 import ReactQuill from "react-quill-new";
 
 import { cn } from "~/lib/utils";
+import { Separator } from "~/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ImageKitUploader } from "~/components/ImagekitUploader";
 import { useRouter } from "next/navigation";
@@ -25,10 +26,43 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+
+const AddQuestion = () => {
+  return (
+    <div className="mt-6">
+      <Input
+        placeholder="Start your question with 'What', 'Why', 'How', etc"
+        className="rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-blue-900 focus-visible:ring-0 focus-visible:ring-offset-0"
+      />
+    </div>
+  );
+};
+
+const CreatePost = () => {
+  return (
+    <div>
+      <ImageKitUploader />
+    </div>
+  );
+};
+
+const tabs = [
+  {
+    name: "Add Question",
+    value: "pnpm",
+    content: <AddQuestion />,
+  },
+  {
+    name: "Create Post",
+    value: "npm",
+    content: <CreatePost />,
+  },
+];
 
 function DialogQuestionPost({
   isOpenDialog,
@@ -74,115 +108,40 @@ function DialogQuestionPost({
           onClick={() => setIsOpenDialog(true)}
         />
       </DialogTrigger>
+      <DialogTitle></DialogTitle>
       <DialogContent className="flex min-h-[50%] w-full flex-col justify-between border sm:min-h-[400px] sm:min-w-[700px]">
         <DialogHeader>
-          <DialogTitle></DialogTitle>
-
-          <DialogDescription></DialogDescription>
-          <Tabs value={tab} onValueChange={onTabChange} className="w-full">
-            <TabsList className="flex w-full justify-between">
-              <TabsTrigger className="w-[50%]" value="question">
-                Add Question
-              </TabsTrigger>
-              <TabsTrigger className="w-[50%]" value="post">
-                Create Post
-              </TabsTrigger>
+          <Tabs
+            onValueChange={onTabChange}
+            defaultValue={tabs[0]!.value}
+            className="w-full"
+          >
+            <TabsList className="w-full justify-start rounded-none border-b bg-background p-0">
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="h-full w-full rounded-none border-b-2 border-transparent bg-background data-[state=active]:border-blue-500 data-[state=active]:shadow-none"
+                >
+                  <h1 className="text-[13px]">{tab.name}</h1>
+                </TabsTrigger>
+              ))}
             </TabsList>
-            <TabsContent value="question" className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-[20px] w-[20px]">
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <Popover>
-                  <PopoverTrigger className="rounded-3xl border border-gray-400 px-2">
-                    {isPublicQuestion ? (
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        <span className="text-sm">Public</span>
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        <span className="text-sm">Limited</span>
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                    )}
-                  </PopoverTrigger>
-                  <PopoverContent className="flex flex-col gap-2 rounded-xl p-0">
-                    <div
-                      onClick={() => setIsPublicQuestion(true)}
-                      className="flex cursor-pointer flex-col gap-1 rounded-t-xl p-2 text-sm hover:bg-[#282829] hover:underline"
-                    >
-                      <span>Public</span>
-                      <span>
-                        Others will see your identity alongside this question on
-                        your profile and in their feeds.
-                      </span>
-                    </div>
-                    <div
-                      onClick={() => setIsPublicQuestion(false)}
-                      className="flex cursor-pointer flex-col gap-1 rounded-b-xl p-2 text-sm hover:bg-[#282829] hover:underline"
-                    >
-                      <span>Limited</span>
-                      <span>
-                        Your identity will be shown but this question will not
-                        appear in your followers' feeds or your profile.
-                      </span>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <Input
-                disabled={isPending}
-                value={qInput}
-                onChange={(e) => setQInput(e.target.value)}
-                className="border-none ring-0 focus-within:border-none focus:border-transparent focus-visible:border-red-500"
-                placeholder="Start your question with 'What', 'How', 'Why', etc"
-              />
-            </TabsContent>
-            <TabsContent value="post">
-              <ReactQuill theme="snow" value={value} onChange={setValue} />
-              <ImageKitUploader />
-            </TabsContent>
+            {tabs.map((tab) => (
+              <TabsContent key={tab.value} value={tab.value}>
+                {tab.content}
+              </TabsContent>
+            ))}
           </Tabs>
         </DialogHeader>
-        <div className="flex w-full items-center justify-end gap-2">
-          <div
-            className={cn("hidden w-full items-center justify-between", {
-              flex: tab === "post",
-            })}
+        <DialogFooter className="flex items-center justify-end gap-2 border-t pt-2">
+          <Button
+            onClick={() => handleCreateQuestion()}
+            className="rounded-full bg-blue-500 text-white hover:bg-blue-500/80"
           >
-            <ImageKitUploader />
-            <Button
-              variant="default"
-              className="rounded-3xl bg-blue-500 text-white hover:bg-blue-600"
-              // onClick={handleCreateQuestion}
-            >
-              Post
-            </Button>
-          </div>
-
-          <div
-            className={cn("hidden w-full items-center justify-end gap-2", {
-              flex: tab === "question",
-            })}
-          >
-            <Button variant="ghost" onClick={() => setIsOpenDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              disabled={qInput.length < 1 || isPending}
-              variant="default"
-              className="rounded-3xl bg-blue-500 text-white hover:bg-blue-600"
-              onClick={handleCreateQuestion}
-            >
-              Add Question
-            </Button>
-          </div>
-        </div>
+            Create
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -192,7 +151,7 @@ export function CreateQuestion() {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   return (
-    <section className="flex flex-col gap-2">
+    <section className="mb-2 flex flex-col gap-2 rounded-md bg-[#181818] p-2">
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />
@@ -203,12 +162,22 @@ export function CreateQuestion() {
           setIsOpenDialog={setIsOpenDialog}
         />
       </div>
-      <div className="flex w-full justify-between">
-        <Button onClick={() => setIsOpenDialog(true)} variant="ghost">
+      <div className="flex h-8 w-full justify-between gap-1">
+        <Button
+          className="w-full rounded-full"
+          onClick={() => setIsOpenDialog(true)}
+          variant="ghost"
+        >
           Ask
         </Button>
-        <Button variant="ghost">Answer</Button>
-        <Button variant="ghost">Post</Button>
+        <Separator orientation="vertical" />
+        <Button className="w-full rounded-full" variant="ghost">
+          Answer
+        </Button>
+        <Separator orientation="vertical" />
+        <Button className="w-full rounded-full" variant="ghost">
+          Post
+        </Button>
       </div>
     </section>
   );

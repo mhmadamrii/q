@@ -27,7 +27,7 @@ export function InfiniteAnsweredQuestions() {
   }, [inView]);
 
   return (
-    <section className="mx-auto flex max-w-3xl flex-col gap-2 border">
+    <section className="mx-auto flex max-w-3xl flex-col gap-2">
       {data?.pages.map((page, idx) => (
         <div key={idx} className="flex flex-col gap-2">
           {page.questions?.map((u) => <QuestionCard key={u.id} question={u} />)}

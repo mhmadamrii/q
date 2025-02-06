@@ -3,9 +3,11 @@
 import React from "react";
 import { ImageKitProvider, IKImage, IKUpload } from "imagekitio-next";
 import { UploadImageIcon } from "./icons/UploadImageIcon";
+import { Input } from "./ui/input";
 
 const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+
 const authenticator = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/imagekit/auth");
@@ -32,28 +34,36 @@ const onError = (err: any) => {
 export function ImageKitUploader() {
   const [image, setImage] = React.useState("");
   return (
-    <div>
+    <div className="itec-center flex flex-col justify-center gap-2">
       <ImageKitProvider
         publicKey={publicKey}
         urlEndpoint={urlEndpoint}
         authenticator={authenticator}
       >
-        <div>
-          <UploadImageIcon />
-          <IKUpload
-            fileName="test-upload.png"
-            onError={onError}
-            onSuccess={(res) => setImage(res?.url)}
-            className="border border-red-500"
-          />
-        </div>
-        {image !== "" && (
+        <Input
+          placeholder="Start your question with 'What', 'Why', 'How', etc"
+          className="rounded-none border-b-0 border-l-0 border-r-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+        {image !== "" ? (
           <IKImage
             urlEndpoint={urlEndpoint}
             src={image}
             lqip={{ active: true }}
             alt="Alt text"
+            className="w-full rounded-md"
+            width={600}
+            height={300}
+            style={{ objectFit: "contain" }}
           />
+        ) : (
+          <div className="flex items-center gap-2 border">
+            <UploadImageIcon />
+            <IKUpload
+              fileName="test-upload.png"
+              onError={onError}
+              onSuccess={(res) => setImage(res?.url)}
+            />
+          </div>
         )}
       </ImageKitProvider>
     </div>

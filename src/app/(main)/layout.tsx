@@ -15,7 +15,7 @@ export default async function MainLayout({
       <Navbar />
       <Spacebar />
       <section className="flex-1">{children}</section>
-      <section className="hidden w-[200px] border sm:block">
+      <section className="hidden w-[200px] sm:block">
         <h1>Some Advertisement</h1>
       </section>
     </section>
