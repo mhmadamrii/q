@@ -7,7 +7,6 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/providers/ThemeProvider";
-import { ImageKitProvider } from "imagekitio-next";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -33,9 +32,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster richColors />
-            <NuqsAdapter>
-              {children}
-            </NuqsAdapter>
+            <NuqsAdapter>{children}</NuqsAdapter>
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
