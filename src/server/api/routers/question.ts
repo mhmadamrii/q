@@ -30,6 +30,19 @@ export const questionRouter = createTRPCRouter({
     return filteredAnsweredQuestions;
   }),
 
+  getAllUnAnsweredQuestions: protectedProcedure.query(async ({ ctx }) => {
+    const questions = await ctx.db.question.findMany({
+      include: {
+        answers: true,
+        user: true,
+      },
+    });
+    const filteredUnAnsweredQuestions = questions.filter(
+      (question) => question.answers.length === 0,
+    );
+    return filteredUnAnsweredQuestions;
+  }),
+
   getInfiniteAnsweredQuestions: publicProcedure
     .input(z.object({ limit: z.number(), cursor: z.number().optional() }))
     .query(async ({ ctx, input }) => {
@@ -84,7 +97,9 @@ export const questionRouter = createTRPCRouter({
     }),
 
   createQuestions: protectedProcedure
-    .input(z.object({ content: z.string().min(1) }))
+    .input(
+      z.object({ content: z.string().min(1), imageUrl: z.string().optional() }),
+    )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.question.create({
         data: {

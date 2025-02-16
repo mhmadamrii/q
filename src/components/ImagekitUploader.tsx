@@ -2,8 +2,8 @@
 
 import React from "react";
 import { ImageKitProvider, IKImage, IKUpload } from "imagekitio-next";
-import { UploadImageIcon } from "./icons/UploadImageIcon";
-import { Input } from "./ui/input";
+import { ImagePlus } from "lucide-react";
+import { Button } from "./ui/button";
 
 const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
@@ -31,8 +31,14 @@ const onError = (err: any) => {
   console.log("Error", err);
 };
 
-export function ImageKitUploader() {
-  const [image, setImage] = React.useState("");
+export function ImageKitUploader({
+  isAskQuestion,
+  onQuestionImageChange,
+}: {
+  isAskQuestion: boolean;
+  onQuestionImageChange: (image: string) => void;
+}) {
+  const imageRef = React.useRef<HTMLInputElement>(null);
   return (
     <div className="itec-center flex flex-col justify-center gap-2">
       <ImageKitProvider
@@ -40,31 +46,18 @@ export function ImageKitUploader() {
         urlEndpoint={urlEndpoint}
         authenticator={authenticator}
       >
-        <Input
-          placeholder="Start your question with 'What', 'Why', 'How', etc"
-          className="rounded-none border-b-0 border-l-0 border-r-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-        {image !== "" ? (
-          <IKImage
-            urlEndpoint={urlEndpoint}
-            src={image}
-            lqip={{ active: true }}
-            alt="Alt text"
-            className="w-full rounded-md"
-            width={600}
-            height={300}
-            style={{ objectFit: "contain" }}
+        <div className="flex items-center gap-2 border">
+          <Button onClick={() => imageRef.current?.click()}>
+            <ImagePlus className="h-4 w-4" />
+          </Button>
+          <IKUpload
+            ref={imageRef}
+            fileName="test-upload.png"
+            onError={onError}
+            onSuccess={(res) => onQuestionImageChange(res?.url)}
+            className="hidden"
           />
-        ) : (
-          <div className="flex items-center gap-2 border">
-            <UploadImageIcon />
-            <IKUpload
-              fileName="test-upload.png"
-              onError={onError}
-              onSuccess={(res) => setImage(res?.url)}
-            />
-          </div>
-        )}
+        </div>
       </ImageKitProvider>
     </div>
   );

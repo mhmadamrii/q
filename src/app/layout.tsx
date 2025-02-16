@@ -35,11 +35,6 @@ export default function RootLayout({
             <Toaster richColors />
             <NuqsAdapter>
               {children}
-              {/* <ImageKitProvider
-                urlEndpoint={process.env.NEXT_PUBLIC_URL_ENDPOINT}
-              >
-                {children}
-              </ImageKitProvider> */}
             </NuqsAdapter>
           </ThemeProvider>
         </TRPCReactProvider>
