@@ -22,7 +22,7 @@ export default async function MainLayout({
             <CreateSpace />
             <SpacesList />
           </aside>
-          <div className="w-full border-r border-l sm:w-[65%]">{children}</div>
+          <div className="w-full border-l border-r sm:w-[65%]">{children}</div>
           <aside className="hidden w-[20%] sm:block">
             <p>
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Soluta

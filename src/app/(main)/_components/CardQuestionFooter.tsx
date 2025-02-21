@@ -6,6 +6,7 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 
 export function CardQuestionFooter({ questionId }: { questionId: number }) {
+  console.log("hellow");
   const { mutate: upVote } = api.question.upVote.useMutation({
     onSuccess: () => {
       toast.success("Upvoted");

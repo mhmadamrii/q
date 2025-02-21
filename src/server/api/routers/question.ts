@@ -12,9 +12,9 @@ export const questionRouter = createTRPCRouter({
       include: {
         answers: {
           orderBy: {
-            upvote: "desc"  // Changed from "asc" to "desc" for highest upvotes first
+            upvote: "desc", // Changed from "asc" to "desc" for highest upvotes first
           },
-          take: 1  // Add this to get only the top answer
+          take: 1, // Add this to get only the top answer
         },
         user: true,
       },
@@ -27,13 +27,12 @@ export const questionRouter = createTRPCRouter({
       include: {
         answers: {
           orderBy: {
-            upvote: "asc"
-          }
+            upvote: "asc",
+          },
         },
         user: true,
       },
     });
-    
 
     const filteredAnsweredQuestions = answeredQuestions.filter(
       (question) => question.answers.length >= 1,
@@ -55,15 +54,17 @@ export const questionRouter = createTRPCRouter({
     return filteredUnAnsweredQuestions;
   }),
 
-  getQuestionById: publicProcedure.input(z.object({ id: z.number() })).query(({ ctx, input }) => {
-    return ctx.db.question.findUnique({
-      where: { id: input.id },
-      include: {
-        answers: true,
-        user: true,
-      },
-    });
-  }),
+  getQuestionById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.question.findUnique({
+        where: { id: input.id },
+        include: {
+          answers: true,
+          user: true,
+        },
+      });
+    }),
 
   getInfiniteAnsweredQuestions: publicProcedure
     .input(z.object({ limit: z.number(), cursor: z.number().optional() }))

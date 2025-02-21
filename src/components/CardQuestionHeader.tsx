@@ -27,7 +27,7 @@ export function CardQuestionHeader({
   name: string;
 }) {
   return (
-    <section className="flex justify-between items-center">
+    <section className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Avatar>
           <AvatarImage src={avatar} alt="@shadcn" />
