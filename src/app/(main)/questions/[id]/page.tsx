@@ -1,3 +1,17 @@
+import { Suspense } from "react";
+import { api } from "~/trpc/server";
+
+async function QuestionById({ id }: { id: string }) {
+  const questionById = await api.question.getQuestionById({ id: +id });
+  console.log("question by id", questionById);
+
+  return (
+    <div>
+      <h1>Question {id}</h1>
+    </div>
+  );
+}
+
 export default async function Question({
   params,
 }: {
@@ -5,8 +19,8 @@ export default async function Question({
 }) {
   const { id } = await params;
   return (
-    <div>
-      <h1>Question</h1>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <QuestionById id={id} />
+    </Suspense>
   );
 }

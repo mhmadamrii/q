@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "~/trpc/react";
 
+import { CardQuestionFooter } from "~/components/CardQuestionFooter";
+import { CardQuestionHeader } from "~/components/CardQuestionHeader";
+
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
 
@@ -22,15 +25,31 @@ export function InfiniteAnsweredQuestions() {
       fetchNextPage();
     }
   }, [inView]);
+  console.log("question", data);
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-2">
       {data?.pages.map((page, idx) => (
         <div key={idx} className="flex flex-col gap-2">
           {page.questions?.map((u) => (
-            <div key={u.id}>
-              <h1>{u.content}</h1>
-            </div>
+            <section
+              className="flex min-h-[80px] flex-col border-b p-2"
+              key={u.id}
+            >
+              <CardQuestionHeader
+                avatar={u.user.image ?? ""}
+                name={u.user.name ?? ""}
+              />
+              <div className="flex gap-2 p-2">
+                <div className="flex-1">
+                  <h1>{u.content}</h1>
+                  <div>
+                    <h1>{u.answers[0]?.content}</h1>
+                  </div>
+                  <CardQuestionFooter questionId={u.id} />
+                </div>
+              </div>
+            </section>
           ))}
         </div>
       ))}

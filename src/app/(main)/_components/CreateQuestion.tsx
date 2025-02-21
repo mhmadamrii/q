@@ -73,12 +73,16 @@ export function CreateQuestion() {
 
   return (
     <>
-      <div className="flex w-full gap-2 border">
+      <div className="flex w-full gap-2 border p-2">
         <Avatar>
           <AvatarImage src={userData?.user?.image} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <Button onClick={() => setIsOpen(true)} variant="outline">
+        <Button
+          className="w-full"
+          onClick={() => setIsOpen(true)}
+          variant="outline"
+        >
           Create Question
         </Button>
       </div>

@@ -15,22 +15,22 @@ export default async function MainLayout({
 
   return (
     <ClientAuthStorage session={session}>
-      <section className="mx-auto flex min-h-screen max-w-5xl pt-16">
+      <section className="mx-auto flex min-h-screen max-w-5xl pt-[50px]">
         <Navbar />
         <section className="flex w-full">
-          <div className="hidden border sm:block sm:w-[15%]">
+          <aside className="hidden sm:block sm:w-[15%]">
             <CreateSpace />
             <SpacesList />
-          </div>
-          <div className="w-full sm:w-[65%]">{children}</div>
-          <div className="hidden w-[20%] border border-red-500 sm:block">
+          </aside>
+          <div className="w-full border-r border-l sm:w-[65%]">{children}</div>
+          <aside className="hidden w-[20%] sm:block">
             <p>
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Soluta
               tenetur doloremque laboriosam dolores labore aspernatur, quia
               placeat ratione ullam quaerat quae, nam asperiores odio,
               praesentium eveniet sint velit facilis laudantium?
             </p>
-          </div>
+          </aside>
         </section>
       </section>
     </ClientAuthStorage>
