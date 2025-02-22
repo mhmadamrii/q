@@ -6,6 +6,7 @@ import { api } from "~/trpc/react";
 
 import { CardQuestionFooter } from "~/components/CardQuestionFooter";
 import { CardQuestionHeader } from "~/components/CardQuestionHeader";
+import Link from "next/link";
 
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
@@ -44,8 +45,13 @@ export function InfiniteAnsweredQuestions() {
               />
               <div className="flex gap-2 p-2">
                 <div className="flex-1">
-                  <h1>{u.content}</h1>
-                  <div>
+                  <Link
+                    href={`/questions/${u.id}`}
+                    className="text-2xl font-bold"
+                  >
+                    {u.content}
+                  </Link>
+                  <div className="mt-2">
                     <h1>{u.answers[0]?.content}</h1>
                   </div>
                   <CardQuestionFooter

@@ -41,9 +41,9 @@ export function CardQuestionHeader({
           <AvatarImage src={avatar} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div>
-          <h1>{name}</h1>
-          <h1>{moment(createdAt!).fromNow()}</h1>
+        <div className="flex flex-col">
+          <span className="font-semibold">{name}</span>
+          <span>{moment(createdAt!).fromNow()}</span>
         </div>
       </div>
       <DropdownMenu>

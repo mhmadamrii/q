@@ -18,7 +18,7 @@ async function QuestionById({ id }: { id: string }) {
       <h1 className="text-3xl">{questionById?.content}</h1>
       <div className="flex items-center justify-between">
         <AnswerQuestion questionId={+id} />
-        <CardQuestionFooter questionId={+id} />
+        {/* <CardQuestionFooter questionId={+id} /> */}
       </div>
     </div>
   );

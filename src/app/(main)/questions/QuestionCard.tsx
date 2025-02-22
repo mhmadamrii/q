@@ -27,27 +27,16 @@ import {
 
 export function QuestionCard({ questions }: { questions: any }) {
   console.log("questions", questions);
+
   const onVote = (id: string, vote: number) => {
     return;
   };
 
   return questions.map((question: any) => (
-    <Card key={question.id} className="mb-3 flex flex-col">
-      <CardHeader>
-        <CardTitle className="text-lg hover:underline">
-          <Link href={`/questions/${question.id}`}>{question.content}</Link>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow">
-        <Badge variant="secondary">
-          <MessageSquare className="mr-1 h-4 w-4" />
-          {question.answerCount} Answers
-        </Badge>
-        <div className="mb-2 flex items-center space-x-2">
-          No Answer Yet • {moment(question.created_at).fromNow()}
-        </div>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between"></CardFooter>
-    </Card>
+    <div className="min-h-[80px]" key={question.id}>
+      <Link href={`/questions/${question.id}`} className="text-2xl font-bold">
+        {question.content}
+      </Link>
+    </div>
   ));
 }
