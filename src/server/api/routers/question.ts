@@ -131,6 +131,34 @@ export const questionRouter = createTRPCRouter({
         },
       });
     }),
+
+  deleteQuestion: protectedProcedure
+    .input(z.object({ questionId: z.number().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.question.delete({
+        where: {
+          id: input.questionId,
+        },
+      });
+    }),
+  AnswerQuestion: protectedProcedure
+    .input(
+      z.object({
+        question_id: z.number().min(1),
+        author_id: z.string().min(1),
+        content: z.string().min(1),
+        imageUrl: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.answer.create({
+        data: {
+          author_id: input.author_id,
+          question_id: input.question_id,
+          content: input.content,
+        },
+      });
+    }),
 });
 
 export type QuestionRouterType = typeof questionRouter;

@@ -1,5 +1,12 @@
+"use client";
+
+import moment from "moment";
+
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { MoreVertical, Bookmark, Flag, XCircle, Trash2 } from "lucide-react";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -8,24 +15,25 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
-import {
-  ChevronUp,
-  ChevronDown,
-  MoreVertical,
-  MessageSquare,
-  Bookmark,
-  Flag,
-  XCircle,
-  Pencil,
-} from "lucide-react";
-
 export function CardQuestionHeader({
   avatar,
   name,
+  createdAt,
+  questionId,
 }: {
   avatar: string;
   name: string;
+  createdAt?: Date;
+  questionId?: number;
 }) {
+  const utils = api.useUtils();
+
+  const { mutate: deleteQuestion } = api.question.deleteQuestion.useMutation({
+    onSuccess: () => {
+      toast.success("Delete success");
+      utils.invalidate();
+    },
+  });
   return (
     <section className="flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -33,7 +41,10 @@ export function CardQuestionHeader({
           <AvatarImage src={avatar} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <h1>{name}</h1>
+        <div>
+          <h1>{name}</h1>
+          <h1>{moment(createdAt!).fromNow()}</h1>
+        </div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -53,6 +64,12 @@ export function CardQuestionHeader({
           <DropdownMenuItem>
             <XCircle className="mr-2 h-4 w-4" />
             Not Interested
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => deleteQuestion({ questionId: questionId ?? 1 })}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

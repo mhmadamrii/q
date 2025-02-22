@@ -15,8 +15,8 @@ export default async function MainLayout({
 
   return (
     <ClientAuthStorage session={session}>
+      <Navbar />
       <section className="mx-auto flex min-h-screen max-w-5xl pt-[50px]">
-        <Navbar />
         <section className="flex w-full">
           <aside className="hidden sm:block sm:w-[15%]">
             <CreateSpace />

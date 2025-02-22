@@ -3,17 +3,10 @@
 import Link from "next/link";
 
 import { Button } from "./ui/button";
-import { usePathname } from "next/navigation";
 import { cn } from "~/lib/utils";
+import { UserRound } from "lucide-react";
 import { ToggleTheme } from "./ToggleTheme";
-
-import {
-  AnswerIcon,
-  FollowingIcon,
-  HomeIcon,
-  NotificatinIcon,
-  SpaceIcon,
-} from "./icons/NavIcons";
+import { HomeIcon } from "./icons/NavIcons";
 
 import {
   DropdownMenu,
@@ -48,7 +41,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   return (
-    <nav className="fixed left-0 right-0 top-0 z-10 h-[50px] border-b bg-card">
+    <nav className="sticky left-0 right-0 top-0 z-10 h-[50px] border-b bg-card">
       <div className="mx-auto flex h-full w-full max-w-5xl items-center justify-between px-4">
         <Link className="text-3xl font-bold" href="/">
           Q
@@ -65,8 +58,8 @@ export function Navbar() {
             <ToggleTheme />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-8">
-                  Open
+                <Button size="icon" variant="outline" className="rounded-full">
+                  <UserRound />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -74,7 +67,7 @@ export function Navbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    Profile
+                    <Link href="/profile">Profile</Link>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuItem>

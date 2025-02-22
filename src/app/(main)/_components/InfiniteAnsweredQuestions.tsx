@@ -25,7 +25,7 @@ export function InfiniteAnsweredQuestions() {
       fetchNextPage();
     }
   }, [inView]);
-  console.log("question", data);
+  console.log("data", data);
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-2">
@@ -39,6 +39,8 @@ export function InfiniteAnsweredQuestions() {
               <CardQuestionHeader
                 avatar={u.user.image ?? ""}
                 name={u.user.name ?? ""}
+                createdAt={u.created_at}
+                questionId={u.id}
               />
               <div className="flex gap-2 p-2">
                 <div className="flex-1">
@@ -46,7 +48,11 @@ export function InfiniteAnsweredQuestions() {
                   <div>
                     <h1>{u.answers[0]?.content}</h1>
                   </div>
-                  <CardQuestionFooter questionId={u.id} />
+                  <CardQuestionFooter
+                    upvote={u.upvote ?? 0}
+                    downvote={u.downvote ?? 0}
+                    questionId={u.id}
+                  />
                 </div>
               </div>
             </section>
