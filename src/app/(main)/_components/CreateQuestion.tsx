@@ -2,6 +2,7 @@
 
 import { Button } from "~/components/ui/button";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Input } from "~/components/ui/input";
 import { IKImage } from "imagekitio-next";
 import { Label } from "~/components/ui/label";
@@ -24,6 +25,7 @@ import {
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 export function CreateQuestion() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isAskQuestion, setIsAskQuestion] = useState(true);
   const [questionImage, setQuestionImage] = useState("");
@@ -36,8 +38,6 @@ export function CreateQuestion() {
     return storedData ? JSON.parse(storedData) : null;
   }, []);
 
-  console.log("userData", userData);
-
   const memoizedChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setQuestion(e.target.value);
@@ -48,6 +48,7 @@ export function CreateQuestion() {
   const { mutate, isPending } = api.question.createQuestions.useMutation({
     onSuccess: () => {
       toast.success("Question created successfully!");
+      router.push("/questions");
     },
   });
 

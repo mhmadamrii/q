@@ -42,8 +42,14 @@ export function CardQuestionHeader({
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="font-semibold">{name}</span>
-          <span>{moment(createdAt!).fromNow()}</span>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">{name}</span>
+            <span> • </span>
+            <span className="text-blue-500">follow</span>
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {moment(createdAt!).fromNow()}
+          </span>
         </div>
       </div>
       <DropdownMenu>

@@ -81,15 +81,12 @@ export const questionRouter = createTRPCRouter({
           user: true,
         },
       });
-      console.dir(questions, { depth: null });
 
       const nextCursor = questions.length > limit ? questions.pop()!.id : null; // Get next cursor if more pages exist
 
-      const filteredAnsweredQuestions = questions.filter(
-        (question) => question.answers.length >= 1,
+      const filteredAnsweredQuestions = questions.sort(
+        (a, b) => b.upvote! - a.upvote!,
       );
-
-      console.log("filteredAnsweredQuestions", filteredAnsweredQuestions);
 
       return {
         questions: filteredAnsweredQuestions,
@@ -103,7 +100,7 @@ export const questionRouter = createTRPCRouter({
       return ctx.db.question.update({
         where: { id: input.questionId },
         data: {
-          upvote: 1,
+          upvote: 3,
         },
       });
     }),

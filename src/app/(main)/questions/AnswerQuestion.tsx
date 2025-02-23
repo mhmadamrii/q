@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader, Pencil } from "lucide-react";
 import { Textarea } from "~/components/ui/textarea";
@@ -18,11 +19,16 @@ import {
 } from "~/components/ui/dialog";
 
 export function AnswerQuestion({ questionId }: { questionId: number }) {
+  const router = useRouter();
+  const utils = api.useUtils();
+
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const { mutate, isPending } = api.answer.createAnswer.useMutation({
     onSuccess: () => {
       toast.success("Thank you for answer");
+      router.refresh();
+      utils.invalidate();
     },
   });
 
@@ -35,8 +41,9 @@ export function AnswerQuestion({ questionId }: { questionId: number }) {
   return (
     <>
       <Button
+        variant="secondary"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 rounded-full"
       >
         <Pencil />
         Answer
