@@ -3,6 +3,7 @@ import { QuestionCard } from "./QuestionCard";
 import { Suspense } from "react";
 import { PenLine } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
+import { ShowAnsweredQuestion } from "./ShowAnsweredQuestion";
 
 async function QuestionsData() {
   const questions = await api.question.getAllUnAnsweredQuestions();
@@ -22,6 +23,7 @@ export default function Questions() {
       <Suspense>
         <QuestionsData />
       </Suspense>
+      <ShowAnsweredQuestion />
     </section>
   );
 }

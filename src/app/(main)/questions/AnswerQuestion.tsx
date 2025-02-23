@@ -2,12 +2,14 @@
 
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
 import { useState } from "react";
 import { Loader, Pencil } from "lucide-react";
 import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 import {
   Dialog,
@@ -18,7 +20,13 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 
-export function AnswerQuestion({ questionId }: { questionId: number }) {
+export function AnswerQuestion({
+  questionId,
+  user,
+}: {
+  questionId: number;
+  user: Session | null;
+}) {
   const router = useRouter();
   const utils = api.useUtils();
 
@@ -40,14 +48,33 @@ export function AnswerQuestion({ questionId }: { questionId: number }) {
   };
   return (
     <>
-      <Button
-        variant="secondary"
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-full"
-      >
-        <Pencil />
-        Answer
-      </Button>
+      <div className="flex h-[200px] w-full flex-col items-center justify-center gap-2 rounded-md border">
+        <div>
+          <Avatar>
+            <AvatarImage src={user?.user.image ?? ""} alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </div>
+        <div>
+          <h1 className="font-semibold">
+            {user?.user.name}, can you answer this question?
+          </h1>
+          <span className="text-sm text-muted-foreground">
+            People are searching for a better answer to this question
+          </span>
+        </div>
+        <div>
+          <Button
+            variant="secondary"
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-2 rounded-full text-blue-500"
+          >
+            <Pencil className="text-blue-500" />
+            Answer
+          </Button>
+        </div>
+      </div>
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
