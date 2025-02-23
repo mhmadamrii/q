@@ -2,15 +2,20 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+  createPost: protectedProcedure
+    .input(
+      z.object({
+        imageUrl: z.string().optional(),
+        content: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.post.create({
+        data: {
+          content: input.content,
+          image_url: input.imageUrl,
+          created_by: ctx.session.user.id,
+        },
+      });
     }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
 });
