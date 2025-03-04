@@ -2,10 +2,12 @@
 
 import React from "react";
 import { ImageKitProvider, IKImage, IKUpload } from "imagekitio-next";
-import { UploadImageIcon } from "./icons/UploadImageIcon";
+import { ImagePlus } from "lucide-react";
+import { Button } from "./ui/button";
 
 const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+
 const authenticator = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/imagekit/auth");
@@ -29,32 +31,33 @@ const onError = (err: any) => {
   console.log("Error", err);
 };
 
-export function ImageKitUploader() {
-  const [image, setImage] = React.useState("");
+export function ImageKitUploader({
+  isAskQuestion,
+  onQuestionImageChange,
+}: {
+  isAskQuestion: boolean;
+  onQuestionImageChange: (image: string) => void;
+}) {
+  const imageRef = React.useRef<HTMLInputElement>(null);
   return (
-    <div>
+    <div className="itec-center flex flex-col justify-center gap-2">
       <ImageKitProvider
         publicKey={publicKey}
         urlEndpoint={urlEndpoint}
         authenticator={authenticator}
       >
-        <div>
-          <UploadImageIcon />
+        <div className="flex items-center gap-2 border">
+          <Button onClick={() => imageRef.current?.click()}>
+            <ImagePlus className="h-4 w-4" />
+          </Button>
           <IKUpload
+            ref={imageRef}
             fileName="test-upload.png"
             onError={onError}
-            onSuccess={(res) => setImage(res?.url)}
-            className="border border-red-500"
+            onSuccess={(res) => onQuestionImageChange(res?.url)}
+            className="hidden"
           />
         </div>
-        {image !== "" && (
-          <IKImage
-            urlEndpoint={urlEndpoint}
-            src={image}
-            lqip={{ active: true }}
-            alt="Alt text"
-          />
-        )}
       </ImageKitProvider>
     </div>
   );

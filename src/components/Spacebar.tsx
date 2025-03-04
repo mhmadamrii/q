@@ -9,7 +9,7 @@ export function Spacebar() {
         Create Space
       </Button>
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="h-full border p-4">
+        <div key={i} className="h-full p-4">
           <h1>{i}</h1>
         </div>
       ))}

@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { Navbar } from "~/components/Navbar";
-import { Spacebar } from "~/components/Spacebar";
 import { auth } from "~/server/auth";
+import { CreateSpace } from "./_components/CreateSpace";
+import { SpacesList } from "./_components/SpacesList";
+import { ClientAuthStorage } from "./_components/ClientAuthStorage";
 
 export default async function MainLayout({
   children,
@@ -10,14 +12,27 @@ export default async function MainLayout({
   if (!session) {
     redirect("/auth");
   }
+
   return (
-    <section className="mx-auto flex min-h-screen max-w-5xl pt-16">
+    <ClientAuthStorage session={session}>
       <Navbar />
-      <Spacebar />
-      <section className="flex-1">{children}</section>
-      <section className="hidden w-[200px] border sm:block">
-        <h1>Some Advertisement</h1>
+      <section className="mx-auto flex min-h-screen max-w-5xl pt-[10px]">
+        <section className="flex w-full">
+          <aside className="sticky top-[50px] hidden h-[500px] sm:block sm:w-[15%]">
+            <CreateSpace />
+            <SpacesList />
+          </aside>
+          <div className="w-full border-l border-r sm:w-[65%]">{children}</div>
+          <aside className="hidden w-[20%] sm:block">
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Soluta
+              tenetur doloremque laboriosam dolores labore aspernatur, quia
+              placeat ratione ullam quaerat quae, nam asperiores odio,
+              praesentium eveniet sint velit facilis laudantium?
+            </p>
+          </aside>
+        </section>
       </section>
-    </section>
+    </ClientAuthStorage>
   );
 }
