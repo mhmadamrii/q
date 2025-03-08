@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "~/trpc/react";
-
 import { CardQuestionFooter } from "~/components/CardQuestionFooter";
 import { CardQuestionHeader } from "~/components/CardQuestionHeader";
-import Link from "next/link";
 
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
@@ -26,7 +26,6 @@ export function InfiniteAnsweredQuestions() {
       fetchNextPage();
     }
   }, [inView]);
-  console.log("data", data);
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-2">

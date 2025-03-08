@@ -1,20 +1,42 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
-interface QuoraStore {
-  bears: number;
-  addABear: () => void;
+interface VoteState {
+  votedPosts: Record<string, boolean>; // e.g., { "post123": true }
+  toggleLike: (postId: number) => void;
+  setVotedPost: (postId: number, liked: boolean) => void;
 }
 
-export const useQuoraStore = create<QuoraStore>()(
+export const useVoteStore = create<VoteState>()(
   persist(
-    (set, get) => ({
-      bears: 0,
-      addABear: () => set({ bears: get().bears + 1 }),
+    (set) => ({
+      votedPosts: {},
+      toggleLike: (postId) =>
+        set((state) => ({
+          votedPosts: {
+            ...state.votedPosts,
+            [postId]: !state.votedPosts[postId], // Toggle the like status
+          },
+        })),
+      setVotedPost: (postId, liked) =>
+        set((state) => ({
+          votedPosts: {
+            ...state.votedPosts,
+            [postId]: liked, // Set explicit like status
+          },
+        })),
     }),
     {
-      name: "user-storage", // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+      name: "vote-posts-questions", // Key in localStorage
+      storage: {
+        getItem: (name) => {
+          const value = localStorage.getItem(name);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (name, value) =>
+          localStorage.setItem(name, JSON.stringify(value)),
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     },
   ),
 );

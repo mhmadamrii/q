@@ -95,23 +95,23 @@ export const questionRouter = createTRPCRouter({
     }),
 
   upVote: protectedProcedure
-    .input(z.object({ questionId: z.number() }))
+    .input(z.object({ questionId: z.number(), prevVote: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.question.update({
         where: { id: input.questionId },
         data: {
-          upvote: 3,
+          upvote: input.prevVote + 1,
         },
       });
     }),
 
   downVote: protectedProcedure
-    .input(z.object({ questionId: z.number() }))
+    .input(z.object({ questionId: z.number(), prevVote: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.question.update({
         where: { id: input.questionId },
         data: {
-          downvote: 1,
+          downvote: input.prevVote + 1,
         },
       });
     }),
