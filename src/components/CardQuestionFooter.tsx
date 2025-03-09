@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 
+import { useState } from "react"
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
+import { useBookmarkStore, useVoteStore } from "~/store";
+import { cn } from "~/lib/utils";
+import { UserVote } from "@prisma/client";
 
 import {
   Tooltip,
@@ -14,7 +18,7 @@ import {
 } from "~/components/ui/tooltip";
 
 import {
-  ThumbsUp,
+  ArrowBigUpDash,
   ThumbsDown,
   MessageCircle,
   Bookmark,
@@ -23,28 +27,82 @@ import {
 
 export function CardQuestionFooter({
   questionId,
-  upvote,
-  downvote,
+  userVotes,
+  upvote: initialUpvoteCount,
+  downvote: initialDownvoteCount,
 }: {
   questionId: number;
+  userVotes: UserVote[]
   upvote: number;
   downvote: number;
 }) {
   const utils = api.useUtils();
 
-  const { mutate: upVote } = api.question.upVote.useMutation({
-    onSuccess: () => {
-      toast.success("Upvoted");
-      utils.invalidate();
-    },
-  });
+  const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
+  const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
+  const [userVote, setUserVote] = useState<"UP" | "DOWN" | null>(null);
+  const [animate, setAnimate] = useState(false);
 
-  const { mutate: downVote } = api.question.downVote.useMutation({
+  const { votedPosts, setVote, removeVotePost } = useVoteStore();
+  const { questionPosts, setBookmarmQuestion } = useBookmarkStore()
+
+  const { mutate: voteQuestion } = api.question.voteQuestion.useMutation({
     onSuccess: () => {
-      toast.success("Downvoted");
+      console.log('success')
+      toast.success("Upvoted")
+      utils.invalidate()
+    },
+    onError: () => {
+      console.log('error')
+    }
+  })
+
+  const { mutate: bookmark } = api.bookmark.bookmarkQuestion.useMutation({
+    onSuccess: () => {
+      toast.success("Post saved")
       utils.invalidate();
     },
-  });
+    onError: () => {
+      toast.error("Something went wrong");
+    }
+  })
+
+  const currentUser = "cm81o0vve0000mv688yroa89g"
+  const handleVote = (type: "UP" | "DOWN") => {
+    const newVote = userVote === type ? null : type;
+
+    if ((newVote == "UP" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
+      console.log('upvotecount', upvoteCount)
+      setUpvoteCount((prev) => prev + 1)
+    }
+
+    if ((newVote == "DOWN" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
+      console.log('upvotecount', upvoteCount)
+      setDownvoteCount((prev) => prev + 1)
+    } else {
+      setDownvoteCount((prev) => prev - 1)
+    }
+
+    setUserVote(newVote);
+    setAnimate(true);
+
+    try {
+      voteQuestion({ questionId, type });
+    } catch (error) {
+      console.error("Vote failed", error);
+    } finally {
+      setTimeout(() => setAnimate(false), 300);
+    }
+  }
+
+  const handleBookmark = () => {
+    if (questionPosts[questionId]) {
+      setBookmarmQuestion(questionId, false)
+    } else {
+      setBookmarmQuestion(questionId, true)
+      bookmark({ questionId })
+    }
+  }
 
   return (
     <TooltipProvider>
@@ -52,23 +110,33 @@ export function CardQuestionFooter({
         <div className="mt-2 flex justify-end gap-6">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
+              <div
+                onClick={() => handleVote("UP")}
+                className="flex items-center justify-start gap-2 hover:bg-slate-800 rounded-3xl pr-3 cursor-pointer">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="flex items-center gap-1 rounded-full text-sm hover:text-blue-500"
-                  onClick={() => upVote({ questionId })}
+                  className="flex items-center gap-1 rounded-full text-sm hover:bg-transparent"
                 >
-                  <ThumbsUp />
+                  <ArrowBigUpDash
+                    fill={votedPosts[questionId] ? "#3b82f6 " : "transparent"}
+                    className={cn("mx-0", {
+                      "text-blue-500": votedPosts[questionId]
+                    })} />
                 </Button>
-                <h1 className="text-blue-400">{upvote}</h1>
+                <h1
+                  className={cn('text-blue-400', {
+                    'animate-slide-up': animate, // Add animation class when triggered
+                  })}
+                >
+                  {upvoteCount}
+                </h1>
               </div>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p>upvote</p>
             </TooltipContent>
           </Tooltip>
-
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center gap-2">
@@ -76,18 +144,22 @@ export function CardQuestionFooter({
                   variant="ghost"
                   size="icon"
                   className="flex items-center gap-1 rounded-full text-sm hover:text-red-500"
-                  onClick={() => downVote({ questionId })}
+                  onClick={() => handleVote("DOWN")}
                 >
-                  <ThumbsDown />
+                  <ThumbsDown
+                    fill={votedPosts[questionId] == undefined || votedPosts[questionId] ? "transparent " : "#f87171"}
+                    className={cn("", {
+                      "text-red-500": votedPosts[questionId] == false
+                    })}
+                  />
                 </Button>
-                <h1 className="text-red-400">{downvote}</h1>
+                <h1 className="text-red-400">{downvoteCount}</h1>
               </div>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p>downvote</p>
             </TooltipContent>
           </Tooltip>
-
           <Button
             variant="ghost"
             size="icon"
@@ -122,8 +194,13 @@ export function CardQuestionFooter({
                   variant="ghost"
                   size="icon"
                   className="flex items-center gap-1 rounded-full text-sm hover:text-blue-500"
+                  onClick={handleBookmark}
                 >
-                  <Bookmark />
+                  <Bookmark
+                    fill={questionPosts[questionId] ? "#3b82f6" : "transparent"}
+                    className={cn("", {
+                      "text-blue-500": questionPosts[questionId]
+                    })} />
                 </Button>
               </div>
             </TooltipTrigger>
