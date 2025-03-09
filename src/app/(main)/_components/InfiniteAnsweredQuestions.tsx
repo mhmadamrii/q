@@ -57,6 +57,7 @@ export function InfiniteAnsweredQuestions() {
                       <h1>{u.answers[0]?.content}</h1>
                     </div>
                     <CardQuestionFooter
+                      userVotes={u.UserVote}
                       upvote={upvotes ?? 0}
                       downvote={downvotes ?? 0}
                       questionId={u.id}

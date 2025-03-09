@@ -8,6 +8,7 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import { useBookmarkStore, useVoteStore } from "~/store";
 import { cn } from "~/lib/utils";
+import { UserVote } from "@prisma/client";
 
 import {
   Tooltip,
@@ -26,10 +27,12 @@ import {
 
 export function CardQuestionFooter({
   questionId,
+  userVotes,
   upvote: initialUpvoteCount,
   downvote: initialDownvoteCount,
 }: {
   questionId: number;
+  userVotes: UserVote[]
   upvote: number;
   downvote: number;
 }) {
@@ -46,6 +49,8 @@ export function CardQuestionFooter({
   const { mutate: voteQuestion } = api.question.voteQuestion.useMutation({
     onSuccess: () => {
       console.log('success')
+      toast.success("Upvoted")
+      utils.invalidate()
     },
     onError: () => {
       console.log('error')
@@ -62,20 +67,20 @@ export function CardQuestionFooter({
     }
   })
 
+  const currentUser = "cm81o0vve0000mv688yroa89g"
   const handleVote = (type: "UP" | "DOWN") => {
     const newVote = userVote === type ? null : type;
-    if (newVote === "UP") {
-      setUpvoteCount((prev) => (userVote === "DOWN" ? prev + 1 : prev + 1));
-      if (userVote === "DOWN") setDownvoteCount((prev) => prev - 1);
-    } else if (newVote === "DOWN") {
-      setDownvoteCount((prev) => (userVote === "UP" ? prev + 1 : prev + 1));
-      if (userVote === "UP") setUpvoteCount((prev) => prev - 1);
+
+    if ((newVote == "UP" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
+      console.log('upvotecount', upvoteCount)
+      setUpvoteCount((prev) => prev + 1)
+    }
+
+    if ((newVote == "DOWN" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
+      console.log('upvotecount', upvoteCount)
+      setDownvoteCount((prev) => prev + 1)
     } else {
-      if (userVote === "UP") {
-        setUpvoteCount((prev) => prev - 1);
-      } else if (userVote === "DOWN") {
-        setDownvoteCount((prev) => prev - 1);
-      }
+      setDownvoteCount((prev) => prev - 1)
     }
 
     setUserVote(newVote);
