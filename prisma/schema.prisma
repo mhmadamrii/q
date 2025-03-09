@@ -60,6 +60,8 @@ model User {
   questions Question[]
   sessions  Session[]
   spaces    Space[]
+  bookmarks Bookmark[]
+  UserVote  UserVote[]
 }
 
 model Answer {
@@ -108,15 +110,17 @@ model Comment {
 }
 
 model Question {
-  id         Int       @id @default(autoincrement())
-  content    String    @db.VarChar(255)
-  author_id  String    @db.VarChar(255)
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime? @db.Timestamptz(6)
-  upvote     Int?      @default(0)
-  downvote   Int?      @default(0)
-  answers    Answer[]
-  user       User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  id            Int        @id @default(autoincrement())
+  content       String     @db.VarChar(255)
+  author_id     String     @db.VarChar(255)
+  created_at    DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?  @db.Timestamptz(6)
+  upvote        Int?       @default(0)
+  downvote      Int?       @default(0)
+  answers       Answer[]
+  user          User       @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  bookmarked_by Bookmark[]
+  UserVote      UserVote[]
 }
 
 model Space {
@@ -130,4 +134,30 @@ model Space {
 
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  question_id Int
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  question    Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model UserVote {
+  id          Int      @default(autoincrement())
+  user_id     String
+  question_id Int
+  type        VoteType
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  question    Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, question_id])
+}
+
+enum VoteType {
+  UP
+  DOWN
 }

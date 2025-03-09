@@ -79,6 +79,7 @@ export const questionRouter = createTRPCRouter({
         include: {
           answers: true,
           user: true,
+          UserVote: true,
         },
       });
 
@@ -94,26 +95,51 @@ export const questionRouter = createTRPCRouter({
       };
     }),
 
-  upVote: protectedProcedure
-    .input(z.object({ questionId: z.number(), prevVote: z.number() }))
+  voteQuestion: protectedProcedure
+    .input(z.object({ questionId: z.number(), type: z.enum(["UP", "DOWN"]) }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.question.update({
-        where: { id: input.questionId },
-        data: {
-          upvote: input.prevVote + 1,
-        },
-      });
-    }),
+      const { questionId, type } = input;
 
-  downVote: protectedProcedure
-    .input(z.object({ questionId: z.number(), prevVote: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.question.update({
-        where: { id: input.questionId },
-        data: {
-          downvote: input.prevVote + 1,
+      const existingVote = await ctx.db.userVote.findUnique({
+        where: {
+          user_id_question_id: {
+            user_id: ctx.session.user.id,
+            question_id: questionId,
+          },
         },
       });
+      console.log("existingVote", existingVote);
+
+      if (!existingVote) {
+        await ctx.db.userVote.create({
+          data: {
+            user_id: ctx.session.user.id,
+            question_id: questionId,
+            type,
+          },
+        });
+      } else if (existingVote.type === type) {
+        await ctx.db.userVote.delete({
+          where: {
+            user_id_question_id: {
+              user_id: ctx.session.user.id,
+              question_id: questionId,
+            },
+          },
+        });
+      } else {
+        await ctx.db.userVote.update({
+          where: {
+            user_id_question_id: {
+              user_id: ctx.session.user.id,
+              question_id: questionId,
+            },
+          },
+          data: {
+            type,
+          },
+        });
+      }
     }),
 
   createQuestions: protectedProcedure
