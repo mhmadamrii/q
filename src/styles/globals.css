@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -29,6 +30,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -56,10 +58,12 @@
     --chart-5: 340 75% 55%;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -69,6 +73,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -83,10 +88,12 @@
     transform: scale(1);
     opacity: 0.7;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -99,11 +106,20 @@
 
 @keyframes slideUp {
   0% {
-    transform: translateY(100%); /* Start below the original position */
-    opacity: 0; /* Fade in from invisible */
+    transform: translateY(100%);
+    /* Start below the original position */
+    opacity: 0;
+    /* Fade in from invisible */
   }
+
   100% {
-    transform: translateY(0); /* End at original position */
-    opacity: 1; /* Fully visible */
+    transform: translateY(0);
+    /* End at original position */
+    opacity: 1;
+    /* Fully visible */
   }
+}
+
+.kntl {
+  border: 1px solid red;
 }

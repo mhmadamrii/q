@@ -37,23 +37,25 @@ export function CardQuestionFooter({
   downvote: number;
 }) {
   const utils = api.useUtils();
+  const currentUser = "cm81o0vve0000mv688yroa89g"
 
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
+
   const [userVote, setUserVote] = useState<"UP" | "DOWN" | null>(null);
   const [animate, setAnimate] = useState(false);
 
   const { votedPosts, setVote, removeVotePost } = useVoteStore();
   const { questionPosts, setBookmarmQuestion } = useBookmarkStore()
 
-  const { mutate: voteQuestion } = api.question.voteQuestion.useMutation({
+  const { mutate: voteQuestion, isPending: isLoadingVoting } = api.question.voteQuestion.useMutation({
     onSuccess: () => {
       console.log('success')
       toast.success("Upvoted")
       utils.invalidate()
     },
-    onError: () => {
-      console.log('error')
+    onError: (err) => {
+      console.log('error', err)
     }
   })
 
@@ -67,32 +69,45 @@ export function CardQuestionFooter({
     }
   })
 
-  const currentUser = "cm81o0vve0000mv688yroa89g"
   const handleVote = (type: "UP" | "DOWN") => {
-    const newVote = userVote === type ? null : type;
-
-    if ((newVote == "UP" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
-      console.log('upvotecount', upvoteCount)
-      setUpvoteCount((prev) => prev + 1)
-    }
-
-    if ((newVote == "DOWN" || !newVote) && !userVotes.some((item) => item.user_id == currentUser)) {
-      console.log('upvotecount', upvoteCount)
-      setDownvoteCount((prev) => prev + 1)
-    } else {
-      setDownvoteCount((prev) => prev - 1)
-    }
-
-    setUserVote(newVote);
     setAnimate(true);
 
-    try {
-      voteQuestion({ questionId, type });
-    } catch (error) {
-      console.error("Vote failed", error);
-    } finally {
-      setTimeout(() => setAnimate(false), 300);
+    switch (type) {
+      case "UP":
+        if (votedPosts[questionId]) {
+          removeVotePost(questionId)
+          setUpvoteCount((prev) => prev - 1)
+          voteQuestion({ questionId, type });
+        } else {
+          setVote(questionId, true)
+          setUpvoteCount((prev) => prev + 1)
+          if (initialDownvoteCount > 0) {
+            setDownvoteCount((prev) => prev - 1);
+          }
+          voteQuestion({ questionId, type });
+        }
+        return
+
+      case "DOWN":
+        console.log(votedPosts[questionId] == false)
+        if (votedPosts[questionId] == false) {
+          setDownvoteCount((prev) => prev - 1)
+          removeVotePost(questionId)
+          voteQuestion({ questionId, type });
+        } else {
+          setVote(questionId, false)
+          setDownvoteCount((prev) => prev + 1)
+          if (initialUpvoteCount > 0) {
+            setUpvoteCount((prev) => prev - 1);
+          }
+          voteQuestion({ questionId, type });
+        }
+        return
+
+      default:
+        break;
     }
+    setTimeout(() => setAnimate(false), 300);
   }
 
   const handleBookmark = () => {
@@ -117,6 +132,7 @@ export function CardQuestionFooter({
                   variant="ghost"
                   size="icon"
                   className="flex items-center gap-1 rounded-full text-sm hover:bg-transparent"
+                  disabled={isLoadingVoting}
                 >
                   <ArrowBigUpDash
                     fill={votedPosts[questionId] ? "#3b82f6 " : "transparent"}
@@ -145,6 +161,7 @@ export function CardQuestionFooter({
                   size="icon"
                   className="flex items-center gap-1 rounded-full text-sm hover:text-red-500"
                   onClick={() => handleVote("DOWN")}
+                  disabled={isLoadingVoting}
                 >
                   <ThumbsDown
                     fill={votedPosts[questionId] == undefined || votedPosts[questionId] ? "transparent " : "#f87171"}

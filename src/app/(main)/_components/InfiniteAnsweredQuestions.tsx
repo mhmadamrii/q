@@ -34,6 +34,7 @@ export function InfiniteAnsweredQuestions() {
           {page.questions?.map((u) => {
             const upvotes = u.UserVote?.filter((item) => item.type === "UP").length
             const downvotes = u.UserVote?.filter((item) => item.type === "DOWN").length
+
             return (
               <section
                 className="flex min-h-[80px] flex-col border-b p-2"

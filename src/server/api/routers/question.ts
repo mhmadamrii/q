@@ -108,7 +108,6 @@ export const questionRouter = createTRPCRouter({
           },
         },
       });
-      console.log("existingVote", existingVote);
 
       if (!existingVote) {
         await ctx.db.userVote.create({

@@ -17,6 +17,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+
+  const test = (a, b) => {
+        console.log(a)
+  }
+
   return (
     <html
       lang="en"
