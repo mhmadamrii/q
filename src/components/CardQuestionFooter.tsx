@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
@@ -32,42 +32,39 @@ export function CardQuestionFooter({
   downvote: initialDownvoteCount,
 }: {
   questionId: number;
-  userVotes: UserVote[]
+  userVotes?: UserVote[];
   upvote: number;
   downvote: number;
 }) {
   const utils = api.useUtils();
-  const currentUser = "cm81o0vve0000mv688yroa89g"
 
   const [upvoteCount, setUpvoteCount] = useState(initialUpvoteCount);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvoteCount);
-
-  const [userVote, setUserVote] = useState<"UP" | "DOWN" | null>(null);
   const [animate, setAnimate] = useState(false);
 
   const { votedPosts, setVote, removeVotePost } = useVoteStore();
-  const { questionPosts, setBookmarmQuestion } = useBookmarkStore()
+  const { questionPosts, setBookmarmQuestion } = useBookmarkStore();
 
-  const { mutate: voteQuestion, isPending: isLoadingVoting } = api.question.voteQuestion.useMutation({
-    onSuccess: () => {
-      console.log('success')
-      toast.success("Upvoted")
-      utils.invalidate()
-    },
-    onError: (err) => {
-      console.log('error', err)
-    }
-  })
+  const { mutate: voteQuestion, isPending: isLoadingVoting } =
+    api.question.voteQuestion.useMutation({
+      onSuccess: () => {
+        toast.success("Upvoted");
+        utils.invalidate();
+      },
+      onError: (err) => {
+        console.log("error", err);
+      },
+    });
 
   const { mutate: bookmark } = api.bookmark.bookmarkQuestion.useMutation({
     onSuccess: () => {
-      toast.success("Post saved")
+      toast.success("Post saved");
       utils.invalidate();
     },
     onError: () => {
       toast.error("Something went wrong");
-    }
-  })
+    },
+  });
 
   const handleVote = (type: "UP" | "DOWN") => {
     setAnimate(true);
@@ -75,49 +72,49 @@ export function CardQuestionFooter({
     switch (type) {
       case "UP":
         if (votedPosts[questionId]) {
-          removeVotePost(questionId)
-          setUpvoteCount((prev) => prev - 1)
+          removeVotePost(questionId);
+          setUpvoteCount((prev) => prev - 1);
           voteQuestion({ questionId, type });
         } else {
-          setVote(questionId, true)
-          setUpvoteCount((prev) => prev + 1)
+          setVote(questionId, true);
+          setUpvoteCount((prev) => prev + 1);
           if (initialDownvoteCount > 0) {
             setDownvoteCount((prev) => prev - 1);
           }
           voteQuestion({ questionId, type });
         }
-        return
+        return;
 
       case "DOWN":
-        console.log(votedPosts[questionId] == false)
+        console.log(votedPosts[questionId] == false);
         if (votedPosts[questionId] == false) {
-          setDownvoteCount((prev) => prev - 1)
-          removeVotePost(questionId)
+          setDownvoteCount((prev) => prev - 1);
+          removeVotePost(questionId);
           voteQuestion({ questionId, type });
         } else {
-          setVote(questionId, false)
-          setDownvoteCount((prev) => prev + 1)
+          setVote(questionId, false);
+          setDownvoteCount((prev) => prev + 1);
           if (initialUpvoteCount > 0) {
             setUpvoteCount((prev) => prev - 1);
           }
           voteQuestion({ questionId, type });
         }
-        return
+        return;
 
       default:
         break;
     }
     setTimeout(() => setAnimate(false), 300);
-  }
+  };
 
   const handleBookmark = () => {
     if (questionPosts[questionId]) {
-      setBookmarmQuestion(questionId, false)
+      setBookmarmQuestion(questionId, false);
     } else {
-      setBookmarmQuestion(questionId, true)
-      bookmark({ questionId })
+      setBookmarmQuestion(questionId, true);
+      bookmark({ questionId });
     }
-  }
+  };
 
   return (
     <TooltipProvider>
@@ -127,7 +124,8 @@ export function CardQuestionFooter({
             <TooltipTrigger asChild>
               <div
                 onClick={() => handleVote("UP")}
-                className="flex items-center justify-start gap-2 hover:bg-slate-800 rounded-3xl pr-3 cursor-pointer">
+                className="flex cursor-pointer items-center justify-start gap-2 rounded-3xl pr-3 hover:bg-slate-800"
+              >
                 <Button
                   variant="ghost"
                   size="icon"
@@ -137,12 +135,13 @@ export function CardQuestionFooter({
                   <ArrowBigUpDash
                     fill={votedPosts[questionId] ? "#3b82f6 " : "transparent"}
                     className={cn("mx-0", {
-                      "text-blue-500": votedPosts[questionId]
-                    })} />
+                      "text-blue-500": votedPosts[questionId],
+                    })}
+                  />
                 </Button>
                 <h1
-                  className={cn('text-blue-400', {
-                    'animate-slide-up': animate, // Add animation class when triggered
+                  className={cn("text-blue-400", {
+                    "animate-slide-up": animate,
                   })}
                 >
                   {upvoteCount}
@@ -164,13 +163,24 @@ export function CardQuestionFooter({
                   disabled={isLoadingVoting}
                 >
                   <ThumbsDown
-                    fill={votedPosts[questionId] == undefined || votedPosts[questionId] ? "transparent " : "#f87171"}
+                    fill={
+                      votedPosts[questionId] == undefined ||
+                      votedPosts[questionId]
+                        ? "transparent "
+                        : "#f87171"
+                    }
                     className={cn("", {
-                      "text-red-500": votedPosts[questionId] == false
+                      "text-red-500": votedPosts[questionId] == false,
                     })}
                   />
                 </Button>
-                <h1 className="text-red-400">{downvoteCount}</h1>
+                <h1
+                  className={cn("text-red-400", {
+                    "animate-slide-up": animate,
+                  })}
+                >
+                  {downvoteCount}
+                </h1>
               </div>
             </TooltipTrigger>
             <TooltipContent side="bottom">
@@ -216,8 +226,9 @@ export function CardQuestionFooter({
                   <Bookmark
                     fill={questionPosts[questionId] ? "#3b82f6" : "transparent"}
                     className={cn("", {
-                      "text-blue-500": questionPosts[questionId]
-                    })} />
+                      "text-blue-500": questionPosts[questionId],
+                    })}
+                  />
                 </Button>
               </div>
             </TooltipTrigger>

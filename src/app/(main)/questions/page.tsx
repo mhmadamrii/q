@@ -20,7 +20,7 @@ export default function Questions() {
         <h1>Questions for you</h1>
       </div>
       <Separator />
-      <Suspense>
+      <Suspense fallback={<span>Loading...</span>}>
         <QuestionsData />
       </Suspense>
       <ShowAnsweredQuestion />

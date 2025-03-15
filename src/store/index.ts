@@ -43,6 +43,7 @@ export const useVoteStore = create<VoteState>()(
     },
   ),
 );
+
 export const useBookmarkStore = create<BookmarkState>()(
   persist(
     (set) => ({

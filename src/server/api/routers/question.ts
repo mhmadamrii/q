@@ -41,11 +41,12 @@ export const questionRouter = createTRPCRouter({
     return filteredAnsweredQuestions;
   }),
 
-  getAllUnAnsweredQuestions: protectedProcedure.query(async ({ ctx }) => {
+  getAllUnAnsweredQuestions: publicProcedure.query(async ({ ctx }) => {
     const questions = await ctx.db.question.findMany({
       include: {
         answers: true,
         user: true,
+        UserVote: true,
       },
     });
     const filteredUnAnsweredQuestions = questions.filter(
@@ -91,7 +92,9 @@ export const questionRouter = createTRPCRouter({
       console.dir(filteredAnsweredQuestions, { depth: null });
 
       return {
-        questions: filteredAnsweredQuestions,
+        questions: filteredAnsweredQuestions.filter(
+          (q) => q.answers.length !== 0,
+        ),
         nextCursor,
       };
     }),
