@@ -119,7 +119,7 @@ export function CardQuestionFooter({
   return (
     <TooltipProvider>
       <section className="flex items-center justify-between">
-        <div className="mt-2 flex justify-end gap-6">
+        <div className="mt-2 flex items-center justify-end gap-6">
           <Tooltip>
             <TooltipTrigger asChild>
               <div
@@ -187,15 +187,24 @@ export function CardQuestionFooter({
               <p>downvote</p>
             </TooltipContent>
           </Tooltip>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="flex items-center gap-1 rounded-full text-sm hover:text-gray-700"
-          >
-            <Link href={`/questions/${questionId}`}>
-              <MessageCircle />
-            </Link>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="flex items-center gap-1 rounded-full text-sm hover:text-gray-700"
+                >
+                  <Link href={`/questions/${questionId}`}>
+                    <MessageCircle />
+                  </Link>
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>comments</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="flex items-center gap-2">
           <Tooltip>

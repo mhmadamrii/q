@@ -37,7 +37,7 @@ export function QuestionCard({
             asked {moment(question.created_at!).fromNow()}
           </span>
         </div>
-        <div className="mb-3 flex justify-between">
+        <div className="mb-3 flex items-center justify-between">
           <Button
             onClick={() => router.push(`/questions/${question.id}`)}
             variant="secondary"

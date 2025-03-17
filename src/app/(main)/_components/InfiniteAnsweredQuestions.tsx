@@ -20,6 +20,7 @@ export function InfiniteAnsweredQuestions() {
         getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
       },
     );
+  console.log("data", data);
 
   useEffect(() => {
     if (inView && !isLoading && hasNextPage) {
@@ -32,8 +33,13 @@ export function InfiniteAnsweredQuestions() {
       {data?.pages.map((page, idx) => (
         <div key={idx} className="flex flex-col gap-2">
           {page.questions?.map((u) => {
-            const upvotes = u.UserVote?.filter((item) => item.type === "UP").length
-            const downvotes = u.UserVote?.filter((item) => item.type === "DOWN").length
+            const upvotes = u.UserVote?.filter(
+              (item) => item.type === "UP",
+            ).length;
+
+            const downvotes = u.UserVote?.filter(
+              (item) => item.type === "DOWN",
+            ).length;
 
             return (
               <section
@@ -66,7 +72,7 @@ export function InfiniteAnsweredQuestions() {
                   </div>
                 </div>
               </section>
-            )
+            );
           })}
         </div>
       ))}

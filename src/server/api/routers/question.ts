@@ -49,6 +49,7 @@ export const questionRouter = createTRPCRouter({
         UserVote: true,
       },
     });
+
     const filteredUnAnsweredQuestions = questions.filter(
       (question) => question.answers.length === 0,
     );
@@ -84,6 +85,8 @@ export const questionRouter = createTRPCRouter({
         },
       });
 
+      const posts = await ctx.db.post.findMany();
+
       const nextCursor = questions.length > limit ? questions.pop()!.id : null; // Get next cursor if more pages exist
 
       const filteredAnsweredQuestions = questions.sort(
@@ -95,6 +98,7 @@ export const questionRouter = createTRPCRouter({
         questions: filteredAnsweredQuestions.filter(
           (q) => q.answers.length !== 0,
         ),
+        posts,
         nextCursor,
       };
     }),
