@@ -14,7 +14,7 @@
 
 - [x] Authentication
 - [x] Questions
-- [ ] Posts
+- [x] Posts
 - [ ] Comments
 - [ ] Likes
 - [ ] Followers
