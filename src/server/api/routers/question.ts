@@ -85,19 +85,25 @@ export const questionRouter = createTRPCRouter({
         },
       });
 
-      const posts = await ctx.db.post.findMany();
+      const posts = await ctx.db.post.findMany({
+        include: {
+          user: true,
+        },
+      });
 
       const nextCursor = questions.length > limit ? questions.pop()!.id : null; // Get next cursor if more pages exist
 
       const filteredAnsweredQuestions = questions.sort(
         (a, b) => b.UserVote.length! - a.UserVote.length!,
       );
+
+      const filteredQuestionsWithAnswers = filteredAnsweredQuestions.filter(
+        (q) => q.answers.length !== 0,
+      );
       console.dir(filteredAnsweredQuestions, { depth: null });
 
       return {
-        questions: filteredAnsweredQuestions.filter(
-          (q) => q.answers.length !== 0,
-        ),
+        questions: filteredQuestionsWithAnswers,
         posts,
         nextCursor,
       };
