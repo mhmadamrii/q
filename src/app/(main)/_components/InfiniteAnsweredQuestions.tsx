@@ -8,28 +8,8 @@ import { api } from "~/trpc/react";
 import { CardQuestionFooter } from "~/components/CardQuestionFooter";
 import { CardQuestionHeader } from "~/components/CardQuestionHeader";
 import { AnimatePresence, motion } from "framer-motion";
+import { listVariants, itemVariants } from "~/lib/animate-variants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-
-const listVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-  },
-};
 
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
