@@ -34,7 +34,7 @@ export function InfiniteAnsweredQuestions() {
 
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-2">
-      {data?.pages.map((page, idx) => (
+      {data?.pages?.slice(0, 1).map((page, idx) => (
         <div key={idx} className="flex flex-col gap-2 px-2 py-2">
           <Tabs defaultValue="questions" className="w-full">
             <TabsList className="grid w-full grid-cols-2">

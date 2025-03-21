@@ -26,6 +26,7 @@ const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 export function CreateQuestion() {
   const router = useRouter();
+  const utils = api.useUtils()
   const [isOpen, setIsOpen] = useState(false);
   const [isAskQuestion, setIsAskQuestion] = useState(true);
   const [questionImage, setQuestionImage] = useState("");
@@ -55,6 +56,9 @@ export function CreateQuestion() {
   const { mutate: post, isPending: isPosting } =
     api.post.createPost.useMutation({
       onSuccess: () => {
+        utils.post.invalidate();
+        setQuestion("")
+        setIsOpen(false)
         toast.success("Post created successfully!");
       },
     });
