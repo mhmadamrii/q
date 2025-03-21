@@ -10,6 +10,7 @@ import { CardQuestionHeader } from "~/components/CardQuestionHeader";
 import { AnimatePresence, motion } from "framer-motion";
 import { listVariants, itemVariants } from "~/lib/animate-variants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { PostLists } from "./PostLists";
 
 export function InfiniteAnsweredQuestions() {
   const { ref, inView } = useInView();
@@ -49,7 +50,7 @@ export function InfiniteAnsweredQuestions() {
                   exit="hidden"
                   variants={listVariants}
                 >
-                  {page.questions?.map((u, index) => {
+                  {page.questions?.map((u) => {
                     const upvotes = u.UserVote?.filter(
                       (item) => item.type === "UP",
                     ).length;
@@ -108,40 +109,7 @@ export function InfiniteAnsweredQuestions() {
                   variants={listVariants}
                 >
                   {page.posts?.map((u, index) => {
-                    return (
-                      <motion.div
-                        key={u.id}
-                        className="flex w-full items-center justify-between gap-2 border-b"
-                        variants={itemVariants}
-                        transition={{ type: "tween" }}
-                      >
-                        <section className="flex min-h-[80px] w-full flex-col p-2">
-                          <CardQuestionHeader
-                            avatar={u.user.image ?? ""}
-                            name={u.user.name ?? ""}
-                            createdAt={u.created_at}
-                            questionId={u.id}
-                          />
-                          <div className="flex gap-2 p-2">
-                            <div className="flex-1">
-                              <Link
-                                href={`/questions/${u.id}`}
-                                className="text-2xl font-bold"
-                              >
-                                {u.content}
-                              </Link>
-                              <div className="mt-2">hello world</div>
-                              <CardQuestionFooter
-                                userVotes={[]}
-                                upvote={0}
-                                downvote={0}
-                                questionId={u.id}
-                              />
-                            </div>
-                          </div>
-                        </section>
-                      </motion.div>
-                    );
+                    return <PostLists post={u} key={index} />;
                   })}
                 </motion.div>
               </AnimatePresence>
