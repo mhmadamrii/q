@@ -10,8 +10,10 @@ import { useQueryState } from "nuqs";
 import { ImageKitUploader } from "~/components/ImagekitUploader";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { cn } from "~/lib/utils";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Textarea } from "~/components/ui/textarea";
 
 import {
   Dialog,
@@ -22,11 +24,13 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 
-const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+const URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 export function CreateQuestion() {
   const router = useRouter();
-  const utils = api.useUtils()
+  const utils = api.useUtils();
+
+  const [postContent, setPostContent] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isAskQuestion, setIsAskQuestion] = useState(true);
   const [questionImage, setQuestionImage] = useState("");
@@ -57,8 +61,8 @@ export function CreateQuestion() {
     api.post.createPost.useMutation({
       onSuccess: () => {
         utils.post.invalidate();
-        setQuestion("")
-        setIsOpen(false)
+        setQuestion("");
+        setIsOpen(false);
         toast.success("Post created successfully!");
       },
     });
@@ -91,6 +95,7 @@ export function CreateQuestion() {
           Create Question
         </Button>
       </div>
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -101,7 +106,37 @@ export function CreateQuestion() {
               Make changes to your profile here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-end justify-start gap-2">
+          <div className="flex flex-col items-end justify-start gap-2">
+            <div className="flex w-full flex-col gap-2">
+              <Label htmlFor="questionTitle">
+                {isAskQuestion ? "Ask Question" : "Post Experience"}
+              </Label>
+              <Input
+                id="questionTitle"
+                value={question}
+                onChange={memoizedChangeHandler}
+                placeholder={
+                  isAskQuestion
+                    ? "Enter your question title"
+                    : "Enter your post title"
+                }
+                required
+              />
+            </div>
+            <div
+              className={cn("flex w-full flex-col gap-2", {
+                hidden: isAskQuestion,
+              })}
+            >
+              <Label htmlFor="postContent">Post Content</Label>
+              <Textarea
+                id="postContent"
+                value={postContent}
+                onChange={() => console.log("")}
+                placeholder="Share your thought"
+                required
+              />
+            </div>
             <div className="flex h-full items-center">
               <Input
                 id="imageUpload"
@@ -116,23 +151,11 @@ export function CreateQuestion() {
                 />
               )}
             </div>
-            <div className="flex w-full flex-col gap-2">
-              <Label htmlFor="questionTitle">
-                {isAskQuestion ? "Ask Question" : "Post Experience"}
-              </Label>
-              <Input
-                id="questionTitle"
-                value={question}
-                onChange={memoizedChangeHandler}
-                placeholder="Enter your question title"
-                required
-              />
-            </div>
           </div>
           <div>
             {questionImage && (
               <IKImage
-                urlEndpoint={urlEndpoint}
+                urlEndpoint={URL_ENDPOINT}
                 src={questionImage}
                 lqip={{ active: true }}
                 alt="Alt text"

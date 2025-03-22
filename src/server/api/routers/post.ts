@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
   createPost: protectedProcedure
@@ -17,5 +17,52 @@ export const postRouter = createTRPCRouter({
           created_by: ctx.session.user.id,
         },
       });
+    }),
+
+  votePost: protectedProcedure
+    .input(z.object({ postId: z.number(), type: z.enum(["UP", "DOWN"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const { postId, type } = input;
+      console.log("post id", postId);
+
+      const existingVote = await ctx.db.postVote.findUnique({
+        where: {
+          user_id_post_id: {
+            user_id: ctx.session.user.id,
+            post_id: postId,
+          },
+        },
+      });
+
+      if (!existingVote) {
+        await ctx.db.postVote.create({
+          data: {
+            user_id: ctx.session.user.id,
+            post_id: postId,
+            type,
+          },
+        });
+      } else if (existingVote.type === type) {
+        await ctx.db.postVote.delete({
+          where: {
+            user_id_post_id: {
+              user_id: ctx.session.user.id,
+              post_id: postId,
+            },
+          },
+        });
+      } else {
+        await ctx.db.postVote.update({
+          where: {
+            user_id_post_id: {
+              user_id: ctx.session.user.id,
+              post_id: postId,
+            },
+          },
+          data: {
+            type,
+          },
+        });
+      }
     }),
 });

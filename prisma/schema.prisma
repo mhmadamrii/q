@@ -62,6 +62,7 @@ model User {
   spaces    Space[]
   bookmarks Bookmark[]
   UserVote  UserVote[]
+  PostVote  PostVote[]
 }
 
 model Answer {
@@ -88,16 +89,17 @@ model Follow {
 }
 
 model Post {
-  id         Int       @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   content    String
   created_by String
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime? @db.Timestamptz(6)
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?  @db.Timestamptz(6)
   image_url  String?
-  user       User      @relation(fields: [created_by], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [created_by], references: [id], onDelete: Cascade)
   coments    Comment[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  PostVote   PostVote[]
 
   @@map("posts")
 }
@@ -155,6 +157,17 @@ model UserVote {
   question    Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, question_id])
+}
+
+model PostVote {
+  id      Int      @default(autoincrement())
+  user_id String
+  post_id Int
+  type    VoteType
+  user    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post    Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, post_id])
 }
 
 enum VoteType {

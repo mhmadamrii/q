@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ImageKitProvider, IKImage, IKUpload } from "imagekitio-next";
+import { ImageKitProvider, IKUpload } from "imagekitio-next";
 import { ImagePlus } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -54,6 +54,7 @@ export function ImageKitUploader({
             ref={imageRef}
             fileName="test-upload.png"
             onError={onError}
+            onLoad={() => console.log("loading upload image..")}
             onSuccess={(res) => onQuestionImageChange(res?.url)}
             className="hidden"
           />
