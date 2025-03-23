@@ -32,10 +32,8 @@ const onError = (err: any) => {
 };
 
 export function ImageKitUploader({
-  isAskQuestion,
   onQuestionImageChange,
 }: {
-  isAskQuestion: boolean;
   onQuestionImageChange: (image: string) => void;
 }) {
   const imageRef = React.useRef<HTMLInputElement>(null);
