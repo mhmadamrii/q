@@ -5,7 +5,7 @@ import { CardQuestionFooter } from "~/components/CardQuestionFooter";
 import { CardQuestionHeader } from "~/components/CardQuestionHeader";
 import { itemVariants } from "~/lib/animate-variants";
 import { PostType } from "~/server/api/client";
-import { IKImage, ImageKitProvider } from "imagekitio-next";
+import { IKImage } from "imagekitio-next";
 
 const URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
@@ -35,8 +35,8 @@ export function PostLists({ post }: { post: PostType }) {
                 urlEndpoint={URL_ENDPOINT}
                 src={post.image_url ?? ""}
                 path="default-image.jpg"
-                  width={600}
-                  height={300}
+                width={600}
+                height={300}
                 alt="Alt text"
                 className="rounded-sm"
               />
@@ -46,6 +46,7 @@ export function PostLists({ post }: { post: PostType }) {
               upvote={0}
               downvote={0}
               questionId={post.id}
+              isPostFooter
             />
           </div>
         </div>

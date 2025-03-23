@@ -27,12 +27,16 @@ import {
 
 export function CardQuestionFooter({
   questionId,
+  postId,
   userVotes,
+  isPostFooter = false,
   upvote: initialUpvoteCount,
   downvote: initialDownvoteCount,
 }: {
   questionId: number;
+  postId?: number;
   userVotes?: UserVote[];
+  isPostFooter?: boolean;
   upvote: number;
   downvote: number;
 }) {
@@ -47,6 +51,17 @@ export function CardQuestionFooter({
 
   const { mutate: voteQuestion, isPending: isLoadingVoting } =
     api.question.voteQuestion.useMutation({
+      onSuccess: () => {
+        toast.success("Upvoted");
+        utils.invalidate();
+      },
+      onError: (err) => {
+        console.log("error", err);
+      },
+    });
+
+  const { mutate: votePost, isPending: isLoadingPostVoting } =
+    api.post.votePost.useMutation({
       onSuccess: () => {
         toast.success("Upvoted");
         utils.invalidate();
@@ -107,6 +122,46 @@ export function CardQuestionFooter({
     setTimeout(() => setAnimate(false), 300);
   };
 
+  const handlePostVote = (type: "UP" | "DOWN") => {
+    setAnimate(true);
+
+    switch (type) {
+      case "UP":
+        if (votedPosts[questionId]) {
+          removeVotePost(questionId);
+          setUpvoteCount((prev) => prev - 1);
+          votePost({ postId: postId ?? 1, type });
+        } else {
+          setVote(questionId, true);
+          setUpvoteCount((prev) => prev + 1);
+          if (initialDownvoteCount > 0) {
+            setDownvoteCount((prev) => prev - 1);
+          }
+          votePost({ postId: postId ?? 1, type });
+        }
+        return;
+
+      case "DOWN":
+        if (votedPosts[questionId] == false) {
+          setDownvoteCount((prev) => prev - 1);
+          removeVotePost(questionId);
+          votePost({ postId: postId ?? 1, type });
+        } else {
+          setVote(questionId, false);
+          setDownvoteCount((prev) => prev + 1);
+          if (initialUpvoteCount > 0) {
+            setUpvoteCount((prev) => prev - 1);
+          }
+          votePost({ postId: postId ?? 1, type });
+        }
+        return;
+
+      default:
+        break;
+    }
+    setTimeout(() => setAnimate(false), 300);
+  };
+
   const handleBookmark = () => {
     if (questionPosts[questionId]) {
       setBookmarmQuestion(questionId, false);
@@ -123,7 +178,14 @@ export function CardQuestionFooter({
           <Tooltip>
             <TooltipTrigger asChild>
               <div
-                onClick={() => handleVote("UP")}
+                onClick={() => {
+                  if (isPostFooter) {
+                    handlePostVote("UP");
+                    return;
+                  }
+
+                  handleVote("UP");
+                }}
                 className="flex cursor-pointer items-center justify-start gap-2 rounded-3xl pr-3 hover:bg-slate-800"
               >
                 <Button
@@ -159,7 +221,13 @@ export function CardQuestionFooter({
                   variant="ghost"
                   size="icon"
                   className="flex items-center gap-1 rounded-full text-sm hover:text-red-500"
-                  onClick={() => handleVote("DOWN")}
+                  onClick={() => {
+                    if (isPostFooter) {
+                      handlePostVote("DOWN");
+                      return;
+                    }
+                    handleVote("DOWN");
+                  }}
                   disabled={isLoadingVoting}
                 >
                   <ThumbsDown

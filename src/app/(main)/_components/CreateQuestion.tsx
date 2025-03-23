@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import { Input } from "~/components/ui/input";
 import { IKImage } from "imagekitio-next";
 import { Label } from "~/components/ui/label";
-import { useQueryState } from "nuqs";
+import { Options, useQueryState } from "nuqs";
 import { ImageKitUploader } from "~/components/ImagekitUploader";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { cn } from "~/lib/utils";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Textarea } from "~/components/ui/textarea";
 
 import {
   Dialog,
@@ -22,15 +24,106 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 
-const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+const URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+
+interface IPost {
+  postInput: { title: string; content: string; image: string };
+  onChangePostHandler: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
+}
+
+interface IQuestion {
+  question: string;
+  onQuestionChange: (
+    value: string | ((old: string) => string | null) | null,
+    options?: Options | undefined,
+  ) => Promise<URLSearchParams>;
+}
+
+type InputChange = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+
+const PostCreation = ({ postInput, onChangePostHandler }: IPost) => {
+  const setImage = () => {};
+  return (
+    <>
+      <div className="flex w-full flex-col gap-2">
+        <Label htmlFor="questionTitle">Post Experience</Label>
+        <Input
+          id="questionTitle"
+          value={postInput.title}
+          name="title"
+          onChange={onChangePostHandler}
+          placeholder="Enter your post title"
+          required
+        />
+      </div>
+      <div className="flex w-full flex-col gap-2">
+        <Label htmlFor="postContent">Post Content</Label>
+        <Textarea
+          id="postContent"
+          value={postInput.content}
+          name="content"
+          onChange={onChangePostHandler}
+          placeholder="Share your thought"
+          required
+        />
+      </div>
+      <div className="flex h-full items-center">
+        <Input
+          id="imageUpload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+        />
+        <ImageKitUploader onQuestionImageChange={setImage} />
+      </div>
+      <div>
+        {postInput.image && (
+          <IKImage
+            urlEndpoint={URL_ENDPOINT}
+            src={postInput.image}
+            lqip={{ active: true }}
+            alt="Alt text"
+            className="w-full rounded-md"
+            width={600}
+            height={300}
+            style={{ objectFit: "contain" }}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+
+const QuestionCreation = ({ question, onQuestionChange }: IQuestion) => {
+  return (
+    <div className="flex w-full flex-col gap-2">
+      <Label htmlFor="questionTitle">Ask Question</Label>
+      <Input
+        id="questionTitle"
+        value={question}
+        onChange={(e) => onQuestionChange(e.target.value)}
+        placeholder="Enter your question title"
+        required
+      />
+    </div>
+  );
+};
 
 export function CreateQuestion() {
   const router = useRouter();
+  const utils = api.useUtils();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isAskQuestion, setIsAskQuestion] = useState(true);
-  const [questionImage, setQuestionImage] = useState("");
   const [question, setQuestion] = useQueryState("🤔", {
     defaultValue: "",
+  });
+  const [postInput, setPostInput] = useState({
+    title: "",
+    content: "",
+    image: "",
   });
 
   const userData = useMemo(() => {
@@ -38,12 +131,12 @@ export function CreateQuestion() {
     return storedData ? JSON.parse(storedData) : null;
   }, []);
 
-  const memoizedChangeHandler = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setQuestion(e.target.value);
-    },
-    [],
-  );
+  const handlePostChange = (e: InputChange) => {
+    setPostInput((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const { mutate, isPending } = api.question.createQuestions.useMutation({
     onSuccess: () => {
@@ -55,6 +148,9 @@ export function CreateQuestion() {
   const { mutate: post, isPending: isPosting } =
     api.post.createPost.useMutation({
       onSuccess: () => {
+        utils.post.invalidate();
+        setQuestion("");
+        setIsOpen(false);
         toast.success("Post created successfully!");
       },
     });
@@ -66,8 +162,9 @@ export function CreateQuestion() {
       });
     } else {
       post({
+        title: "",
         content: question,
-        imageUrl: questionImage,
+        imageUrl: "",
       });
     }
   };
@@ -87,6 +184,7 @@ export function CreateQuestion() {
           Create Question
         </Button>
       </div>
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -97,45 +195,16 @@ export function CreateQuestion() {
               Make changes to your profile here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-end justify-start gap-2">
-            <div className="flex h-full items-center">
-              <Input
-                id="imageUpload"
-                type="file"
-                accept="image/*"
-                className="hidden"
+          <div className="flex flex-col items-end justify-start gap-2">
+            {isAskQuestion ? (
+              <QuestionCreation
+                question={question}
+                onQuestionChange={setQuestion}
               />
-              {!isAskQuestion && (
-                <ImageKitUploader
-                  isAskQuestion={isAskQuestion}
-                  onQuestionImageChange={setQuestionImage}
-                />
-              )}
-            </div>
-            <div className="flex w-full flex-col gap-2">
-              <Label htmlFor="questionTitle">
-                {isAskQuestion ? "Ask Question" : "Post Experience"}
-              </Label>
-              <Input
-                id="questionTitle"
-                value={question}
-                onChange={memoizedChangeHandler}
-                placeholder="Enter your question title"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            {questionImage && (
-              <IKImage
-                urlEndpoint={urlEndpoint}
-                src={questionImage}
-                lqip={{ active: true }}
-                alt="Alt text"
-                className="w-full rounded-md"
-                width={600}
-                height={300}
-                style={{ objectFit: "contain" }}
+            ) : (
+              <PostCreation
+                postInput={postInput}
+                onChangePostHandler={handlePostChange}
               />
             )}
           </div>
