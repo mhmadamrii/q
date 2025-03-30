@@ -11,7 +11,7 @@ import { ImageKitUploader } from "~/components/ImagekitUploader";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { cn } from "~/lib/utils";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Textarea } from "~/components/ui/textarea";
 
@@ -28,9 +28,9 @@ const URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 interface IPost {
   postInput: { title: string; content: string; image: string };
-  onChangePostHandler: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => void;
+  onTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onContentChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onImageChange: (img: string) => void;
 }
 
 interface IQuestion {
@@ -43,8 +43,12 @@ interface IQuestion {
 
 type InputChange = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
 
-const PostCreation = ({ postInput, onChangePostHandler }: IPost) => {
-  const setImage = () => {};
+const PostCreation = ({
+  postInput,
+  onImageChange,
+  onTitleChange,
+  onContentChange,
+}: IPost) => {
   return (
     <>
       <div className="flex w-full flex-col gap-2">
@@ -53,7 +57,7 @@ const PostCreation = ({ postInput, onChangePostHandler }: IPost) => {
           id="questionTitle"
           value={postInput.title}
           name="title"
-          onChange={onChangePostHandler}
+          onChange={onTitleChange}
           placeholder="Enter your post title"
           required
         />
@@ -64,19 +68,23 @@ const PostCreation = ({ postInput, onChangePostHandler }: IPost) => {
           id="postContent"
           value={postInput.content}
           name="content"
-          onChange={onChangePostHandler}
+          onChange={onContentChange}
           placeholder="Share your thought"
           required
         />
       </div>
-      <div className="flex h-full items-center">
+      <div
+        className={cn("flex h-full items-center", {
+          hidden: postInput.image !== "",
+        })}
+      >
         <Input
           id="imageUpload"
           type="file"
           accept="image/*"
           className="hidden"
         />
-        <ImageKitUploader onQuestionImageChange={setImage} />
+        <ImageKitUploader onQuestionImageChange={onImageChange} />
       </div>
       <div>
         {postInput.image && (
@@ -125,6 +133,7 @@ export function CreateQuestion() {
     content: "",
     image: "",
   });
+  console.log("post inpupt", postInput);
 
   const userData = useMemo(() => {
     const storedData = localStorage.getItem("q_app");
@@ -161,10 +170,11 @@ export function CreateQuestion() {
         content: question,
       });
     } else {
+      console.log("post input", postInput);
       post({
-        title: "",
-        content: question,
-        imageUrl: "",
+        title: postInput.title,
+        content: postInput.content,
+        imageUrl: postInput.image,
       });
     }
   };
@@ -204,7 +214,24 @@ export function CreateQuestion() {
             ) : (
               <PostCreation
                 postInput={postInput}
-                onChangePostHandler={handlePostChange}
+                onTitleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPostInput((prevInput) => ({
+                    ...prevInput,
+                    title: e.target.value,
+                  }))
+                }
+                onContentChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                  setPostInput((prevInput) => ({
+                    ...prevInput,
+                    content: e.target.value,
+                  }))
+                }
+                onImageChange={(img: string) =>
+                  setPostInput((prevInput) => ({
+                    ...prevInput,
+                    image: img,
+                  }))
+                }
               />
             )}
           </div>
