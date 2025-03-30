@@ -133,7 +133,6 @@ export function CreateQuestion() {
     content: "",
     image: "",
   });
-  console.log("post inpupt", postInput);
 
   const userData = useMemo(() => {
     const storedData = localStorage.getItem("q_app");
@@ -158,7 +157,13 @@ export function CreateQuestion() {
     api.post.createPost.useMutation({
       onSuccess: () => {
         utils.post.invalidate();
+        utils.question.invalidate();
         setQuestion("");
+        setPostInput({
+          content: "",
+          image: "",
+          title: "",
+        });
         setIsOpen(false);
         toast.success("Post created successfully!");
       },

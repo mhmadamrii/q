@@ -18,10 +18,11 @@ export type GetUnasnweredQuestionsType = Prisma.QuestionGetPayload<{
 
 export type PostType = Prisma.PostGetPayload<{
   select: {
-    user: true,
-    id: true,
-    created_at: true,
-    content: true,
-    image_url: true
-  }
-}>
+    user: true;
+    id: true;
+    created_at: true;
+    content: true;
+    image_url: true;
+    title: true;
+  };
+}>;

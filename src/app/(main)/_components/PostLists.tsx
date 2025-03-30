@@ -6,11 +6,11 @@ import { CardQuestionHeader } from "~/components/CardQuestionHeader";
 import { itemVariants } from "~/lib/animate-variants";
 import { PostType } from "~/server/api/client";
 import { IKImage } from "imagekitio-next";
+import { cn } from "~/lib/utils";
 
 const URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 
 export function PostLists({ post }: { post: PostType }) {
-  console.log("post", post);
   return (
     <motion.div
       key={post.id}
@@ -28,9 +28,14 @@ export function PostLists({ post }: { post: PostType }) {
         <div className="flex gap-2 p-2">
           <div className="flex-1">
             <Link href={`/questions/${post.id}`} className="text-2xl font-bold">
-              {post.content}
+              {post.title}
             </Link>
-            <div className="w-full">
+            <p>{post.content}</p>
+            <div
+              className={cn("w-full", {
+                hidden: post.image_url == "",
+              })}
+            >
               <IKImage
                 urlEndpoint={URL_ENDPOINT}
                 src={post.image_url ?? ""}

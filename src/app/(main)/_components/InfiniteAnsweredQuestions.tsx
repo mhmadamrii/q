@@ -24,7 +24,6 @@ export function InfiniteAnsweredQuestions() {
         getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
       },
     );
-  console.log("data", data);
 
   useEffect(() => {
     if (inView && !isLoading && hasNextPage) {
