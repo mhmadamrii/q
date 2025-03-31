@@ -91,7 +91,9 @@ export const questionRouter = createTRPCRouter({
         },
       });
 
+      console.log("q len", questions.length);
       const nextCursor = questions.length > limit ? questions.pop()!.id : null; // Get next cursor if more pages exist
+      console.log("nextCursor", nextCursor);
 
       const filteredAnsweredQuestions = questions.sort(
         (a, b) => b.UserVote.length! - a.UserVote.length!,
@@ -100,7 +102,7 @@ export const questionRouter = createTRPCRouter({
       const filteredQuestionsWithAnswers = filteredAnsweredQuestions.filter(
         (q) => q.answers.length !== 0,
       );
-      console.dir(filteredAnsweredQuestions, { depth: null });
+      console.dir(filteredAnsweredQuestions.length, { depth: null });
 
       return {
         questions: filteredQuestionsWithAnswers,

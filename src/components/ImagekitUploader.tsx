@@ -32,8 +32,10 @@ const onError = (err: any) => {
 };
 
 export function ImageKitUploader({
+  setIsUploading,
   onQuestionImageChange,
 }: {
+  setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
   onQuestionImageChange: (image: string) => void;
 }) {
   const imageRef = React.useRef<HTMLInputElement>(null);
@@ -54,6 +56,7 @@ export function ImageKitUploader({
             onError={onError}
             onLoad={() => console.log("loading upload image..")}
             onSuccess={(res) => onQuestionImageChange(res?.url)}
+            onUploadStart={() => setIsUploading(true)}
             className="hidden"
           />
         </div>

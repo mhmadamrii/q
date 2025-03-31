@@ -49,6 +49,7 @@ const PostCreation = ({
   onTitleChange,
   onContentChange,
 }: IPost) => {
+  const [isUploading, setIsUploading] = useState(false);
   return (
     <>
       <div className="flex w-full flex-col gap-2">
@@ -75,7 +76,7 @@ const PostCreation = ({
       </div>
       <div
         className={cn("flex h-full items-center", {
-          hidden: postInput.image !== "",
+          hidden: postInput.image !== "" && isUploading,
         })}
       >
         <Input
@@ -84,7 +85,14 @@ const PostCreation = ({
           accept="image/*"
           className="hidden"
         />
-        <ImageKitUploader onQuestionImageChange={onImageChange} />
+        {isUploading ? (
+          <Loader className="animate-spin" />
+        ) : (
+          <ImageKitUploader
+            setIsUploading={setIsUploading}
+            onQuestionImageChange={onImageChange}
+          />
+        )}
       </div>
       <div>
         {postInput.image && (
@@ -139,13 +147,6 @@ export function CreateQuestion() {
     return storedData ? JSON.parse(storedData) : null;
   }, []);
 
-  const handlePostChange = (e: InputChange) => {
-    setPostInput((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
   const { mutate, isPending } = api.question.createQuestions.useMutation({
     onSuccess: () => {
       toast.success("Question created successfully!");
@@ -186,7 +187,7 @@ export function CreateQuestion() {
 
   return (
     <>
-      <div className="flex w-full gap-2 border p-2">
+      <div className="flex w-full gap-2 p-2">
         <Avatar>
           <AvatarImage src={userData?.user?.image} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
